@@ -1,298 +1,774 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Cloud, Clock, MapPin, Plus, Trash2, Sun, Moon } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProClock Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-export default function ProClockPro() {
-  const [time, setTime] = useState(new Date());
-  const [weather, setWeather] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [ip, setIp] = useState('---.---.---.---');
-  const [timezones, setTimezones] = useState([
-    { name: 'Helsinki', offset: 2, code: 'EET' },
-    { name: 'London', offset: 0, code: 'GMT' },
-    { name: 'New York', offset: -5, code: 'EST' },
-  ]);
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState('');
-  const [activeTab, setActiveTab] = useState('clock'); // clock, tasks
-  const [isDark, setIsDark] = useState(true);
+        :root {
+            --accent: #00d9ff;
+            --accent-dark: #0099cc;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --border: #334155;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+        }
 
-  // Update time every second
-  useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1a1f35 100%);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
 
-  // Fetch IP
-  useEffect(() => {
-    const getIp = async () => {
-      try {
-        const res = await fetch('https://ipapi.co/json/');
-        const data = await res.json();
-        setIp(data.ip);
-      } catch (e) {
-        setIp('OFFLINE');
-      }
-    };
-    getIp();
-  }, []);
+        /* Top Bar */
+        .top-bar {
+            backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.5);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-  // Fetch weather
-  useEffect(() => {
-    const getWeather = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch('https://wttr.in/?format=j1');
-        const data = await res.json();
-        const current = data.current_condition[0];
-        setWeather({
-          temp: current.temp_C,
-          desc: current.weatherDesc[0].value,
-          icon: current.weatherCode,
-        });
-      } catch (e) {
-        setWeather({ temp: '-', desc: 'Unable to load', icon: 0 });
-      }
-      setLoading(false);
-    };
-    getWeather();
-  }, []);
+        .top-bar-content {
+            max-width: 80rem;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-  const getTimeInTimezone = (offsetHours) => {
-    const localTime = new Date();
-    const utc = localTime.getTime() + localTime.getTimezoneOffset() * 60000;
-    const tzTime = new Date(utc + 3600000 * offsetHours);
-    return {
-      hours: tzTime.getHours().toString().padStart(2, '0'),
-      minutes: tzTime.getMinutes().toString().padStart(2, '0'),
-    };
-  };
+        .ip-display {
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-  const dayProgress = ((time.getHours() * 3600 + time.getMinutes() * 60 + time.getSeconds()) / 86400) * 100;
+        .status-dot {
+            width: 0.5rem;
+            height: 0.5rem;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
 
-  const handleAddTask = () => {
-    if (newTask.trim()) {
-      setTasks([...tasks, { id: Date.now(), text: newTask, completed: false }]);
-      setNewTask('');
-    }
-  };
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
 
-  const toggleTask = (id) => {
-    setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
-  };
+        .theme-toggle {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
 
-  const deleteTask = (id) => {
-    setTasks(tasks.filter(t => t.id !== id));
-  };
+        .theme-toggle:hover {
+            background: var(--border);
+            color: var(--accent);
+        }
 
-  return (
-    <div className={`min-h-screen font-sans transition-colors duration-300 ${isDark ? 'bg-slate-950' : 'bg-white'}`}>
-      {/* Top Bar */}
-      <div className={`border-b ${isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-white/80'} backdrop-blur-md sticky top-0 z-50`}>
-        <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
-            <span className={`text-sm font-mono ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{ip}</span>
-          </div>
-          <button
-            onClick={() => setIsDark(!isDark)}
-            className={`p-2 rounded-lg transition-colors ${isDark ? 'bg-slate-800 text-yellow-400 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
-          >
-            {isDark ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
+        /* Main Container */
+        .container {
+            max-width: 80rem;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0.5rem 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1rem;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Clock Section */
+        .clock-section {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .main-clock {
+            font-size: clamp(4rem, 15vw, 9rem);
+            font-weight: 100;
+            letter-spacing: -2px;
+            margin-bottom: 1rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .clock-seconds {
+            color: var(--accent);
+            font-size: clamp(2rem, 8vw, 4rem);
+            font-weight: 300;
+        }
+
+        .date-display {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 1.5rem;
+        }
+
+        /* Progress Bar */
+        .progress-section {
+            margin-bottom: 3rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: var(--bg-light);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-dark) 100%);
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
+            transition: width 1s linear;
+            border-radius: 4px;
+        }
+
+        /* Weather Card */
+        .weather-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.4));
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .weather-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.1);
+        }
+
+        .weather-icon {
+            font-size: 3.5rem;
+        }
+
+        .weather-icon.loading {
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .weather-info h3 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+        }
+
+        .weather-info p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Timezones Grid */
+        .timezones-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .timezones-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .timezone-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.2));
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .timezone-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 217, 255, 0.15);
+        }
+
+        .timezone-name {
+            color: var(--text-tertiary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .timezone-time {
+            font-size: 2.5rem;
+            font-weight: 300;
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 0.5rem;
+        }
+
+        .timezone-code {
+            color: var(--accent);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Tasks Section */
+        .tasks-container {
+            max-width: 50rem;
+        }
+
+        .task-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .task-input {
+            flex: 1;
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .task-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.2);
+        }
+
+        .task-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            color: #000;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 1rem 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 217, 255, 0.3);
+        }
+
+        .btn-add:active {
+            transform: translateY(0);
+        }
+
+        /* Tasks List */
+        .tasks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .task-item {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.2));
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            border-color: var(--accent);
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
+            border-color: var(--border);
+        }
+
+        .task-checkbox {
+            width: 1.25rem;
+            height: 1.25rem;
+            cursor: pointer;
+            accent-color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .task-text {
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: var(--text-tertiary);
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: all 0.3s ease;
+            font-size: 1.25rem;
+        }
+
+        .btn-delete:hover {
+            color: #ff4444;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-tertiary);
+        }
+
+        /* Light Mode */
+        body.light-mode {
+            --accent: #0099cc;
+            --accent-dark: #0077aa;
+            --bg: #f8fafc;
+            --bg-light: #f1f5f9;
+            --border: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-tertiary: #94a3b8;
+        }
+
+        body.light-mode {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .weather-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .timezones-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-nav {
+                gap: 1rem;
+            }
+
+            .main-clock {
+                font-size: clamp(3rem, 12vw, 6rem);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <div class="ip-display">
+                <span class="status-dot"></span>
+                <span id="ip-text">---.---.---.---</span>
+            </div>
+            <button class="theme-toggle" id="theme-btn">🌙</button>
         </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-6 py-12">
-        {/* Tab Navigation */}
-        <div className="flex gap-4 mb-12 border-b border-slate-700">
-          <button
-            onClick={() => setActiveTab('clock')}
-            className={`pb-4 px-2 font-medium transition-all ${
-              activeTab === 'clock'
-                ? `text-cyan-400 border-b-2 border-cyan-400`
-                : isDark ? 'text-slate-400 hover:text-slate-300' : 'text-slate-600 hover:text-slate-700'
-            }`}
-          >
-            <Clock className="inline mr-2" size={18} />
-            Clock
-          </button>
-          <button
-            onClick={() => setActiveTab('tasks')}
-            className={`pb-4 px-2 font-medium transition-all ${
-              activeTab === 'tasks'
-                ? `text-cyan-400 border-b-2 border-cyan-400`
-                : isDark ? 'text-slate-400 hover:text-slate-300' : 'text-slate-600 hover:text-slate-700'
-            }`}
-          >
-            Tasks
-          </button>
-        </div>
-
-        {/* CLOCK TAB */}
-        {activeTab === 'clock' && (
-          <div className="space-y-12">
-            {/* Main Clock */}
-            <div className="text-center space-y-6">
-              <div className="space-y-2">
-                <div className={`text-9xl font-extralight tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  {time.getHours().toString().padStart(2, '0')}:{time.getMinutes().toString().padStart(2, '0')}
-                </div>
-                <div className="text-cyan-400 text-4xl font-light">
-                  :{time.getSeconds().toString().padStart(2, '0')}
-                </div>
-              </div>
-              <div className={`text-sm uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-                {time.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-              </div>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="space-y-3">
-              <div className="flex justify-between text-xs">
-                <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Day Progress</span>
-                <span className="text-cyan-400 font-mono">{dayProgress.toFixed(4)}%</span>
-              </div>
-              <div className={`h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}>
-                <div
-                  className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full shadow-lg shadow-cyan-500/50"
-                  style={{ width: `${dayProgress}%`, transition: 'width 1s linear' }}
-                ></div>
-              </div>
-            </div>
-
-            {/* Weather Card */}
-            <div className={`rounded-xl border ${isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-slate-50'} backdrop-blur-sm p-6 flex items-center gap-4`}>
-              <div className={`text-5xl ${loading ? 'animate-spin' : ''}`}>
-                {weather?.temp ? (
-                  weather.temp > 15 ? '☀️' : weather.temp > 0 ? '⛅' : '❄️'
-                ) : (
-                  <Cloud size={40} />
-                )}
-              </div>
-              <div>
-                <div className={`text-2xl font-light ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  {weather?.temp}°C
-                </div>
-                <div className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                  {weather?.desc || 'Loading...'}
-                </div>
-              </div>
-            </div>
-
-            {/* Timezones */}
-            <div className="space-y-4">
-              <h3 className={`text-sm uppercase tracking-widest font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                Time Zones
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {timezones.map((tz) => {
-                  const tzTime = getTimeInTimezone(tz.offset);
-                  return (
-                    <div
-                      key={tz.name}
-                      className={`rounded-lg border ${isDark ? 'border-slate-800 bg-slate-900/30' : 'border-slate-200 bg-white'} p-4 transition-all hover:shadow-lg`}
-                    >
-                      <div className={`text-xs uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-500'} mb-3`}>
-                        {tz.name}
-                      </div>
-                      <div className={`text-3xl font-light ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                        {tzTime.hours}:{tzTime.minutes}
-                      </div>
-                      <div className="text-cyan-400 text-xs mt-2">{tz.code}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* TASKS TAB */}
-        {activeTab === 'tasks' && (
-          <div className="max-w-2xl space-y-6">
-            <div className="space-y-3">
-              <h3 className={`text-sm uppercase tracking-widest font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                Tasks & To-Do
-              </h3>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newTask}
-                  onChange={(e) => setNewTask(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddTask()}
-                  placeholder="Add a new task..."
-                  className={`flex-1 px-4 py-3 rounded-lg border ${
-                    isDark
-                      ? 'bg-slate-900 border-slate-800 text-white placeholder-slate-500'
-                      : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
-                  } focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-all`}
-                />
-                <button
-                  onClick={handleAddTask}
-                  className="px-6 py-3 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all flex items-center gap-2"
-                >
-                  <Plus size={18} />
-                  Add
-                </button>
-              </div>
-            </div>
-
-            {tasks.length > 0 ? (
-              <div className="space-y-2">
-                {tasks.map((task) => (
-                  <div
-                    key={task.id}
-                    className={`rounded-lg border p-4 flex items-center gap-3 transition-all ${
-                      task.completed
-                        ? isDark
-                          ? 'bg-slate-900/30 border-slate-800'
-                          : 'bg-slate-100 border-slate-200'
-                        : isDark
-                        ? 'bg-slate-900/50 border-slate-700 hover:border-cyan-400/50'
-                        : 'bg-white border-slate-200 hover:border-cyan-400/50'
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={task.completed}
-                      onChange={() => toggleTask(task.id)}
-                      className="w-5 h-5 rounded border-slate-400 cursor-pointer accent-cyan-400"
-                    />
-                    <span
-                      className={`flex-1 transition-all ${
-                        task.completed
-                          ? isDark
-                            ? 'line-through text-slate-500'
-                            : 'line-through text-slate-400'
-                          : isDark
-                          ? 'text-white'
-                          : 'text-slate-900'
-                      }`}
-                    >
-                      {task.text}
-                    </span>
-                    <button
-                      onClick={() => deleteTask(task.id)}
-                      className={`p-2 rounded transition-colors ${
-                        isDark
-                          ? 'hover:bg-red-900/30 text-slate-400 hover:text-red-400'
-                          : 'hover:bg-red-100 text-slate-400 hover:text-red-600'
-                      }`}
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className={`text-center py-12 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-                No tasks yet. Add one to get started!
-              </div>
-            )}
-          </div>
-        )}
-      </div>
     </div>
-  );
-}
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-btn active" data-tab="clock">⏰ Clock</button>
+            <button class="tab-btn" data-tab="tasks">✓ Tasks</button>
+        </div>
+
+        <!-- CLOCK TAB -->
+        <div id="clock" class="tab-content active">
+            <!-- Main Clock -->
+            <div class="clock-section">
+                <div class="main-clock">
+                    <span id="clock-hours">00</span>:<span id="clock-minutes">00</span><span class="clock-seconds">:<span id="clock-seconds">00</span></span>
+                </div>
+                <div class="date-display" id="date-display">Loading...</div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-section">
+                <div class="progress-label">
+                    <span>Day Progress</span>
+                    <span id="progress-percent">0.0000%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+
+            <!-- Weather Card -->
+            <div class="weather-card">
+                <div class="weather-icon" id="weather-icon">☁️</div>
+                <div class="weather-info">
+                    <h3 id="weather-temp">--°C</h3>
+                    <p id="weather-desc">Loading weather...</p>
+                </div>
+            </div>
+
+            <!-- Timezones Section -->
+            <div class="timezones-section">
+                <div class="section-title">Time Zones</div>
+                <div class="timezones-grid" id="timezones-grid">
+                    <!-- Generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TASKS TAB -->
+        <div id="tasks" class="tab-content">
+            <div class="tasks-container">
+                <div class="section-title" style="margin-bottom: 2rem;">Tasks & To-Do</div>
+                
+                <div class="task-input-group">
+                    <input 
+                        type="text" 
+                        class="task-input" 
+                        id="task-input" 
+                        placeholder="Add a new task..."
+                    >
+                    <button class="btn-add" id="btn-add-task">➕ Add</button>
+                </div>
+
+                <div class="tasks-list" id="tasks-list">
+                    <div class="empty-state">No tasks yet. Add one to get started!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== STATE ==========
+        let isDarkMode = true;
+        let tasks = JSON.parse(localStorage.getItem('proClockTasks')) || [];
+
+        const timezones = [
+            { name: 'Helsinki', offset: 2, code: 'EET' },
+            { name: 'London', offset: 0, code: 'GMT' },
+            { name: 'New York', offset: -5, code: 'EST' },
+            { name: 'Tokyo', offset: 9, code: 'JST' },
+        ];
+
+        // ========== DOM ELEMENTS ==========
+        const clockHours = document.getElementById('clock-hours');
+        const clockMinutes = document.getElementById('clock-minutes');
+        const clockSeconds = document.getElementById('clock-seconds');
+        const dateDisplay = document.getElementById('date-display');
+        const progressFill = document.getElementById('progress-fill');
+        const progressPercent = document.getElementById('progress-percent');
+        const weatherIcon = document.getElementById('weather-icon');
+        const weatherTemp = document.getElementById('weather-temp');
+        const weatherDesc = document.getElementById('weather-desc');
+        const ipText = document.getElementById('ip-text');
+        const themeBtn = document.getElementById('theme-btn');
+        const taskInput = document.getElementById('task-input');
+        const btnAddTask = document.getElementById('btn-add-task');
+        const tasksList = document.getElementById('tasks-list');
+        const timezonesGrid = document.getElementById('timezones-grid');
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        // ========== CLOCK UPDATE ==========
+        function updateClock() {
+            const now = new Date();
+            
+            clockHours.textContent = String(now.getHours()).padStart(2, '0');
+            clockMinutes.textContent = String(now.getMinutes()).padStart(2, '0');
+            clockSeconds.textContent = String(now.getSeconds()).padStart(2, '0');
+
+            // Update date
+            const dateOptions = { weekday: 'long', month: 'short', day: 'numeric' };
+            dateDisplay.textContent = now.toLocaleDateString('en-US', dateOptions).toUpperCase();
+
+            // Update progress
+            const totalSeconds = 86400;
+            const currentSeconds = (now.getHours() * 3600) + (now.getMinutes() * 60) + now.getSeconds();
+            const progress = (currentSeconds / totalSeconds) * 100;
+            
+            progressFill.style.width = progress + '%';
+            progressPercent.textContent = progress.toFixed(4) + '%';
+
+            requestAnimationFrame(updateClock);
+        }
+
+        // ========== TIMEZONE DISPLAY ==========
+        function updateTimezones() {
+            timezonesGrid.innerHTML = timezones.map(tz => {
+                const now = new Date();
+                const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+                const tzTime = new Date(utc + 3600000 * tz.offset);
+                const hours = String(tzTime.getHours()).padStart(2, '0');
+                const minutes = String(tzTime.getMinutes()).padStart(2, '0');
+
+                return `
+                    <div class="timezone-card">
+                        <div class="timezone-name">${tz.name}</div>
+                        <div class="timezone-time">${hours}:${minutes}</div>
+                        <div class="timezone-code">${tz.code}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ========== WEATHER ==========
+        async function fetchWeather() {
+            try {
+                const res = await fetch('https://wttr.in/?format=j1');
+                const data = await res.json();
+                const current = data.current_condition[0];
+                const temp = Math.round(current.temp_C);
+                const desc = current.weatherDesc[0].value;
+                
+                weatherTemp.textContent = temp + '°C';
+                weatherDesc.textContent = desc;
+
+                // Weather emoji
+                const code = current.weatherCode;
+                if (temp > 15) weatherIcon.textContent = '☀️';
+                else if (temp > 0) weatherIcon.textContent = '⛅';
+                else weatherIcon.textContent = '❄️';
+            } catch (e) {
+                weatherTemp.textContent = '--°C';
+                weatherDesc.textContent = 'Unable to load weather';
+            }
+        }
+
+        // ========== IP ADDRESS ==========
+        async function fetchIP() {
+            try {
+                const res = await fetch('https://ipapi.co/json/');
+                const data = await res.json();
+                ipText.textContent = data.ip;
+            } catch (e) {
+                ipText.textContent = 'OFFLINE';
+            }
+        }
+
+        // ========== THEME TOGGLE ==========
+        function initTheme() {
+            const saved = localStorage.getItem('proClockTheme');
+            isDarkMode = saved ? JSON.parse(saved) : true;
+            applyTheme();
+        }
+
+        function applyTheme() {
+            if (isDarkMode) {
+                document.body.classList.remove('light-mode');
+                themeBtn.textContent = '🌙';
+            } else {
+                document.body.classList.add('light-mode');
+                themeBtn.textContent = '☀️';
+            }
+            localStorage.setItem('proClockTheme', JSON.stringify(isDarkMode));
+        }
+
+        themeBtn.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            applyTheme();
+        });
+
+        // ========== TASKS ==========
+        function renderTasks() {
+            if (tasks.length === 0) {
+                tasksList.innerHTML = '<div class="empty-state">No tasks yet. Add one to get started!</div>';
+                return;
+            }
+
+            tasksList.innerHTML = tasks.map(task => `
+                <div class="task-item ${task.completed ? 'completed' : ''}">
+                    <input 
+                        type="checkbox" 
+                        class="task-checkbox" 
+                        ${task.completed ? 'checked' : ''}
+                        onchange="toggleTask(${task.id})"
+                    >
+                    <span class="task-text">${escapeHtml(task.text)}</span>
+                    <button class="btn-delete" onclick="deleteTask(${task.id})">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function addTask() {
+            const text = taskInput.value.trim();
+            if (!text) return;
+
+            tasks.push({
+                id: Date.now(),
+                text: text,
+                completed: false
+            });
+
+            taskInput.value = '';
+            saveTasks();
+            renderTasks();
+        }
+
+        window.toggleTask = (id) => {
+            tasks = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+            saveTasks();
+            renderTasks();
+        };
+
+        window.deleteTask = (id) => {
+            tasks = tasks.filter(t => t.id !== id);
+            saveTasks();
+            renderTasks();
+        };
+
+        function saveTasks() {
+            localStorage.setItem('proClockTasks', JSON.stringify(tasks));
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ========== TAB NAVIGATION ==========
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.dataset.tab;
+                
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                btn.classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+            });
+        });
+
+        // ========== TASK INPUT ==========
+        btnAddTask.addEventListener('click', addTask);
+        taskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTask();
+        });
+
+        // ========== INIT ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            updateClock();
+            updateTimezones();
+            fetchWeather();
+            fetchIP();
+            renderTasks();
+
+            // Update timezones every minute
+            setInterval(updateTimezones, 60000);
+            
+            // Fetch weather every 30 minutes
+            setInterval(fetchWeather, 30 * 60000);
+        });
+    </script>
+</body>
+</html>
