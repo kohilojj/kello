@@ -2,7 +2,13 @@
 <html lang="fi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="description" content="Modern clock app with tasks, weather, and focus mode. Works offline, installable as PWA.">
+    <meta name="theme-color" content="#00d9ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ProClock Pro">
+    <link rel="manifest" href="data:application/json,{%22name%22:%22ProClock%20Pro%22,%22short_name%22:%22ProClock%22,%22description%22:%22Modern%20clock%20with%20tasks%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%230f172a%22,%22theme_color%22:%22%2300d9ff%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20192%20192%27%3E%3Crect%20fill=%27%230f172a%27%20width=%27192%27%20height=%27192%27/%3E%3Ccircle%20cx=%2796%27%20cy=%2796%27%20r=%2780%27%20fill=%27none%27%20stroke=%27%2300d9ff%27%20stroke-width=%274%27/%3E%3Cline%20x1=%2796%27%20y1=%2740%27%20x2=%2796%27%20y2=%2760%27%20stroke=%27%2300d9ff%27%20stroke-width=%273%27/%3E%3C/svg%3E%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22}]}">
     <title>ProClock Pro</title>
     <style>
         * {
@@ -28,9 +34,13 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             overflow-x: hidden;
             min-height: 100vh;
+            transition: all 0.3s ease;
         }
 
-        /* Top Bar */
+        body.focus-mode {
+            background: linear-gradient(135deg, #0a0e1a 0%, #0f1829 100%);
+        }
+
         .top-bar {
             backdrop-filter: blur(20px);
             background: rgba(15, 23, 42, 0.5);
@@ -71,7 +81,12 @@
             50% { opacity: 0.5; }
         }
 
-        .theme-toggle {
+        .top-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .theme-toggle, .focus-toggle {
             background: var(--bg-light);
             border: 1px solid var(--border);
             color: var(--text-secondary);
@@ -82,19 +97,22 @@
             font-size: 1rem;
         }
 
-        .theme-toggle:hover {
+        .theme-toggle:hover, .focus-toggle:hover {
             background: var(--border);
             color: var(--accent);
         }
 
-        /* Main Container */
+        .focus-toggle.active {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
         .container {
             max-width: 80rem;
             margin: 0 auto;
             padding: 3rem 2rem;
         }
 
-        /* Tab Navigation */
         .tab-nav {
             display: flex;
             gap: 2rem;
@@ -150,7 +168,6 @@
             to { opacity: 1; }
         }
 
-        /* Clock Section */
         .clock-section {
             text-align: center;
             margin-bottom: 4rem;
@@ -178,7 +195,6 @@
             margin-top: 1.5rem;
         }
 
-        /* Progress Bar */
         .progress-section {
             margin-bottom: 3rem;
         }
@@ -206,7 +222,6 @@
             border-radius: 4px;
         }
 
-        /* Weather Card */
         .weather-card {
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.4));
             border: 1px solid var(--border);
@@ -249,7 +264,6 @@
             font-size: 0.875rem;
         }
 
-        /* Timezones Grid */
         .timezones-section {
             margin-bottom: 3rem;
         }
@@ -304,7 +318,6 @@
             font-weight: 600;
         }
 
-        /* Tasks Section */
         .tasks-container {
             max-width: 50rem;
         }
@@ -313,10 +326,12 @@
             display: flex;
             gap: 1rem;
             margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
 
         .task-input {
             flex: 1;
+            min-width: 200px;
             background: var(--bg-light);
             border: 1px solid var(--border);
             border-radius: 0.75rem;
@@ -336,6 +351,21 @@
             color: var(--text-tertiary);
         }
 
+        #task-priority {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #task-priority:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
         .btn-add {
             background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
             color: #000;
@@ -349,6 +379,7 @@
             align-items: center;
             gap: 0.5rem;
             font-size: 1rem;
+            white-space: nowrap;
         }
 
         .btn-add:hover {
@@ -360,7 +391,6 @@
             transform: translateY(0);
         }
 
-        /* Tasks List */
         .tasks-list {
             display: flex;
             flex-direction: column;
@@ -369,22 +399,57 @@
 
         .task-item {
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.2));
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
             border-radius: 0.75rem;
             padding: 1.25rem;
             display: flex;
             align-items: center;
             gap: 1rem;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: grab;
+            user-select: none;
+            touch-action: pan-y;
+        }
+
+        .task-item:active {
+            cursor: grabbing;
         }
 
         .task-item:hover {
             border-color: var(--accent);
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 217, 255, 0.1);
+        }
+
+        .task-item.swiping {
+            opacity: 0.8;
         }
 
         .task-item.completed {
-            opacity: 0.6;
+            opacity: 0.5;
             border-color: var(--border);
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.2), rgba(15, 23, 42, 0.1));
+        }
+
+        .task-item.completed:hover {
+            transform: translateX(0);
+        }
+
+        .task-check-bg {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.2), transparent);
+            transition: width 0.3s ease;
+            pointer-events: none;
+        }
+
+        .task-item.swiping-complete .task-check-bg {
+            width: 100%;
         }
 
         .task-checkbox {
@@ -393,16 +458,67 @@
             cursor: pointer;
             accent-color: var(--accent);
             flex-shrink: 0;
+            position: relative;
+            z-index: 1;
         }
 
         .task-text {
             flex: 1;
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            word-break: break-word;
         }
 
         .task-item.completed .task-text {
             text-decoration: line-through;
             color: var(--text-tertiary);
+        }
+
+        .task-item-wrapper {
+            position: relative;
+        }
+
+        .task-swipe-hint {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.7rem;
+            color: var(--text-tertiary);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .task-item:hover .task-swipe-hint {
+            opacity: 0.5;
+        }
+
+        .task-priority {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: auto;
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .task-priority.high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ff6b6b;
+        }
+
+        .task-priority.medium {
+            background: rgba(251, 146, 60, 0.2);
+            color: #ffa500;
+        }
+
+        .task-priority.low {
+            background: rgba(34, 197, 94, 0.2);
+            color: #6ee7b7;
         }
 
         .btn-delete {
@@ -413,10 +529,12 @@
             padding: 0.5rem;
             transition: all 0.3s ease;
             font-size: 1.25rem;
+            flex-shrink: 0;
         }
 
         .btn-delete:hover {
             color: #ff4444;
+            transform: scale(1.2);
         }
 
         .empty-state {
@@ -425,7 +543,187 @@
             color: var(--text-tertiary);
         }
 
-        /* Light Mode */
+        .settings-container {
+            max-width: 60rem;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .settings-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.2));
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .settings-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .settings-card-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .settings-card-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .settings-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+        }
+
+        .settings-option:last-child {
+            border-bottom: none;
+        }
+
+        .settings-label {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .settings-label span:first-child {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .settings-desc {
+            color: var(--text-tertiary);
+            font-size: 0.75rem;
+        }
+
+        .settings-checkbox {
+            width: 1.25rem;
+            height: 1.25rem;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .toggle-switch {
+            background: var(--bg-light);
+            border: 2px solid var(--border);
+            width: 50px;
+            height: 26px;
+            border-radius: 13px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 2px;
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--border);
+            border-radius: 50%;
+            left: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch:checked::before,
+        .toggle-switch.active::before {
+            left: 26px;
+            background: var(--accent);
+        }
+
+        .toggle-switch:hover {
+            border-color: var(--accent);
+        }
+
+        .settings-btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.75rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            color: #000;
+            border: none;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .settings-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 217, 255, 0.3);
+        }
+
+        .settings-btn:last-child {
+            margin-bottom: 0;
+        }
+
+        .settings-btn.danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #fff;
+        }
+
+        .settings-btn.danger:hover {
+            box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
+        }
+
+        .settings-info {
+            padding: 0.5rem 0;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .settings-info p {
+            margin: 0.5rem 0;
+            color: var(--text-primary);
+        }
+
+        .settings-info a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .settings-info a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        body.focus-mode .tab-nav,
+        body.focus-mode .timezones-section,
+        body.focus-mode .weather-card {
+            display: none;
+        }
+
+        body.focus-mode .clock-section {
+            margin-bottom: 6rem;
+        }
+
+        body.focus-mode .main-clock {
+            font-size: clamp(6rem, 20vw, 12rem);
+        }
+
         body.light-mode {
             --accent: #0099cc;
             --accent-dark: #0077aa;
@@ -441,7 +739,6 @@
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .container {
                 padding: 2rem 1rem;
@@ -463,32 +760,40 @@
             .main-clock {
                 font-size: clamp(3rem, 12vw, 6rem);
             }
+
+            .task-input-group {
+                flex-direction: column;
+            }
+
+            .task-input {
+                min-width: auto;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Top Bar -->
+
     <div class="top-bar">
         <div class="top-bar-content">
             <div class="ip-display">
                 <span class="status-dot"></span>
                 <span id="ip-text">---.---.---.---</span>
             </div>
-            <button class="theme-toggle" id="theme-btn">🌙</button>
+            <div class="top-controls">
+                <button class="theme-toggle" id="theme-btn">🌙</button>
+                <button class="focus-toggle" id="focus-btn" title="Focus Mode">🧠</button>
+            </div>
         </div>
     </div>
 
-    <!-- Main Container -->
     <div class="container">
-        <!-- Tab Navigation -->
         <div class="tab-nav">
             <button class="tab-btn active" data-tab="clock">⏰ Clock</button>
             <button class="tab-btn" data-tab="tasks">✓ Tasks</button>
+            <button class="tab-btn" data-tab="settings">⚙️ Settings</button>
         </div>
 
-        <!-- CLOCK TAB -->
         <div id="clock" class="tab-content active">
-            <!-- Main Clock -->
             <div class="clock-section">
                 <div class="main-clock">
                     <span id="clock-hours">00</span>:<span id="clock-minutes">00</span><span class="clock-seconds">:<span id="clock-seconds">00</span></span>
@@ -496,7 +801,6 @@
                 <div class="date-display" id="date-display">Loading...</div>
             </div>
 
-            <!-- Progress Bar -->
             <div class="progress-section">
                 <div class="progress-label">
                     <span>Day Progress</span>
@@ -507,7 +811,6 @@
                 </div>
             </div>
 
-            <!-- Weather Card -->
             <div class="weather-card">
                 <div class="weather-icon" id="weather-icon">☁️</div>
                 <div class="weather-info">
@@ -516,27 +819,23 @@
                 </div>
             </div>
 
-            <!-- Timezones Section -->
             <div class="timezones-section">
                 <div class="section-title">Time Zones</div>
-                <div class="timezones-grid" id="timezones-grid">
-                    <!-- Generated by JavaScript -->
-                </div>
+                <div class="timezones-grid" id="timezones-grid"></div>
             </div>
         </div>
 
-        <!-- TASKS TAB -->
         <div id="tasks" class="tab-content">
             <div class="tasks-container">
-                <div class="section-title" style="margin-bottom: 2rem;">Tasks & To-Do</div>
+                <div class="section-title" style="margin-bottom: 2rem;">Tasks & To-Do <span id="task-count" style="color: var(--accent);">(0)</span></div>
                 
                 <div class="task-input-group">
-                    <input 
-                        type="text" 
-                        class="task-input" 
-                        id="task-input" 
-                        placeholder="Add a new task..."
-                    >
+                    <input type="text" class="task-input" id="task-input" placeholder="Add a new task...">
+                    <select id="task-priority">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
                     <button class="btn-add" id="btn-add-task">➕ Add</button>
                 </div>
 
@@ -545,21 +844,127 @@
                 </div>
             </div>
         </div>
+
+        <div id="settings" class="tab-content">
+            <div class="settings-container">
+                <div class="section-title" style="margin-bottom: 2rem;">Settings & Preferences</div>
+                
+                <div class="settings-grid">
+                    <!-- Theme Section -->
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <h3>🎨 Appearance</h3>
+                        </div>
+                        <div class="settings-option">
+                            <div class="settings-label">
+                                <span>Dark Mode</span>
+                                <span class="settings-desc">Better for eyes at night</span>
+                            </div>
+                            <button class="toggle-switch" id="dark-mode-toggle" onclick="toggleDarkMode()"></button>
+                        </div>
+                    </div>
+
+                    <!-- Time Format Section -->
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <h3>⏰ Time Display</h3>
+                        </div>
+                        <div class="settings-option">
+                            <div class="settings-label">
+                                <span>Show Seconds</span>
+                                <span class="settings-desc">Display seconds in clock</span>
+                            </div>
+                            <input type="checkbox" class="settings-checkbox" id="show-seconds" checked onchange="toggleSeconds()">
+                        </div>
+                        <div class="settings-option">
+                            <div class="settings-label">
+                                <span>24-Hour Format</span>
+                                <span class="settings-desc">Use 24-hour time display</span>
+                            </div>
+                            <input type="checkbox" class="settings-checkbox" id="24h-format" onchange="toggle24HFormat()">
+                        </div>
+                    </div>
+
+                    <!-- Data Section -->
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <h3>💾 Data Management</h3>
+                        </div>
+                        <button class="settings-btn" onclick="exportData()">📥 Export Data</button>
+                        <button class="settings-btn danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+                    </div>
+
+                    <!-- About Section -->
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <h3>ℹ️ About</h3>
+                        </div>
+                        <div class="settings-info">
+                            <p><strong>ProClock Pro</strong></p>
+                            <p style="color: var(--text-secondary); margin-top: 0.5rem;">v1.0.0</p>
+                            <p style="color: var(--text-tertiary); margin-top: 1rem; font-size: 0.875rem;">Professional time management and productivity app</p>
+                            <p style="color: var(--text-tertiary); margin-top: 1rem; font-size: 0.875rem;">📧 Support: <a href="mailto:natsaerkki@gmail.com" style="color: var(--accent); text-decoration: none;">natsaerkki@gmail.com</a></p>
+                        </div>
+                    </div>
+
+                    <!-- Stats Section -->
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <h3>📊 Statistics</h3>
+                        </div>
+                        <div class="settings-info">
+                            <p>Total Tasks: <strong id="stat-total">0</strong></p>
+                            <p>Completed: <strong id="stat-completed" style="color: #6ee7b7;">0</strong></p>
+                            <p>Completion Rate: <strong id="stat-rate" style="color: var(--accent);">0%</strong></p>
+                            <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-tertiary);">App Storage: <strong id="stat-storage">0 KB</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Professional Footer -->
+    <div style="text-align: center; padding: 3rem 2rem; background: linear-gradient(180deg, transparent 0%, rgba(0,217,255,0.05) 100%); border-top: 2px solid var(--border); margin-top: 4rem;">
+        <div style="max-width: 80rem; margin: 0 auto;">
+            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">ProClock Pro</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Professional Productivity & Time Management Platform</p>
+            
+            <div style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 1.5rem; flex-wrap: wrap; font-size: 0.875rem;">
+                <div style="color: var(--text-tertiary);">
+                    <strong style="color: var(--text-primary);">Version:</strong> 1.0.0
+                </div>
+                <div style="color: var(--text-tertiary);">
+                    <strong style="color: var(--text-primary);">Status:</strong> <span style="color: #6ee7b7;">Active</span>
+                </div>
+                <div style="color: var(--text-tertiary);">
+                    <strong style="color: var(--text-primary);">Users:</strong> <span id="user-count" style="color: var(--accent);">1</span>
+                </div>
+            </div>
+            
+            <p style="color: var(--text-tertiary); font-size: 0.875rem; margin-bottom: 1rem;">
+                Need help? <a href="mailto:natsaerkki@gmail.com?subject=ProClock%20Pro%20Support" style="color: var(--accent); text-decoration: none; font-weight: 600;">Contact Support</a> or check Settings for more options
+            </p>
+            
+            <p style="color: var(--text-tertiary); font-size: 0.75rem;">
+                © 2024 ProClock Pro. All rights reserved. | <a href="mailto:natsaerkki@gmail.com" style="color: var(--accent); text-decoration: none;">natsaerkki@gmail.com</a>
+            </p>
+        </div>
     </div>
 
     <script>
-        // ========== STATE ==========
-        let isDarkMode = true;
+        // STATE
+        let isDarkMode = localStorage.getItem('proClockTheme') === 'dark';
+        let isFocusMode = localStorage.getItem('proClockFocus') === 'true';
         let tasks = JSON.parse(localStorage.getItem('proClockTasks')) || [];
 
         const timezones = [
             { name: 'Helsinki', offset: 2, code: 'EET' },
             { name: 'London', offset: 0, code: 'GMT' },
             { name: 'New York', offset: -5, code: 'EST' },
-            { name: 'Tokyo', offset: 9, code: 'JST' },
         ];
 
-        // ========== DOM ELEMENTS ==========
+        // DOM ELEMENTS
         const clockHours = document.getElementById('clock-hours');
         const clockMinutes = document.getElementById('clock-minutes');
         const clockSeconds = document.getElementById('clock-seconds');
@@ -571,14 +976,16 @@
         const weatherDesc = document.getElementById('weather-desc');
         const ipText = document.getElementById('ip-text');
         const themeBtn = document.getElementById('theme-btn');
+        const focusBtn = document.getElementById('focus-btn');
         const taskInput = document.getElementById('task-input');
+        const taskPriority = document.getElementById('task-priority');
         const btnAddTask = document.getElementById('btn-add-task');
         const tasksList = document.getElementById('tasks-list');
         const timezonesGrid = document.getElementById('timezones-grid');
         const tabBtns = document.querySelectorAll('.tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
 
-        // ========== CLOCK UPDATE ==========
+        // CLOCK UPDATE
         function updateClock() {
             const now = new Date();
             
@@ -586,11 +993,9 @@
             clockMinutes.textContent = String(now.getMinutes()).padStart(2, '0');
             clockSeconds.textContent = String(now.getSeconds()).padStart(2, '0');
 
-            // Update date
             const dateOptions = { weekday: 'long', month: 'short', day: 'numeric' };
             dateDisplay.textContent = now.toLocaleDateString('en-US', dateOptions).toUpperCase();
 
-            // Update progress
             const totalSeconds = 86400;
             const currentSeconds = (now.getHours() * 3600) + (now.getMinutes() * 60) + now.getSeconds();
             const progress = (currentSeconds / totalSeconds) * 100;
@@ -601,7 +1006,7 @@
             requestAnimationFrame(updateClock);
         }
 
-        // ========== TIMEZONE DISPLAY ==========
+        // TIMEZONE DISPLAY
         function updateTimezones() {
             timezonesGrid.innerHTML = timezones.map(tz => {
                 const now = new Date();
@@ -620,7 +1025,7 @@
             }).join('');
         }
 
-        // ========== WEATHER ==========
+        // WEATHER
         async function fetchWeather() {
             try {
                 const res = await fetch('https://wttr.in/?format=j1');
@@ -632,8 +1037,6 @@
                 weatherTemp.textContent = temp + '°C';
                 weatherDesc.textContent = desc;
 
-                // Weather emoji
-                const code = current.weatherCode;
                 if (temp > 15) weatherIcon.textContent = '☀️';
                 else if (temp > 0) weatherIcon.textContent = '⛅';
                 else weatherIcon.textContent = '❄️';
@@ -643,7 +1046,7 @@
             }
         }
 
-        // ========== IP ADDRESS ==========
+        // IP ADDRESS
         async function fetchIP() {
             try {
                 const res = await fetch('https://ipapi.co/json/');
@@ -654,63 +1057,153 @@
             }
         }
 
-        // ========== THEME TOGGLE ==========
+        // THEME & FOCUS MODE
         function initTheme() {
-            const saved = localStorage.getItem('proClockTheme');
-            isDarkMode = saved ? JSON.parse(saved) : true;
-            applyTheme();
-        }
-
-        function applyTheme() {
             if (isDarkMode) {
-                document.body.classList.remove('light-mode');
-                themeBtn.textContent = '🌙';
-            } else {
                 document.body.classList.add('light-mode');
                 themeBtn.textContent = '☀️';
+            } else {
+                themeBtn.textContent = '🌙';
             }
-            localStorage.setItem('proClockTheme', JSON.stringify(isDarkMode));
+            
+            if (isFocusMode) {
+                document.body.classList.add('focus-mode');
+                focusBtn.classList.add('active');
+            }
         }
 
         themeBtn.addEventListener('click', () => {
             isDarkMode = !isDarkMode;
-            applyTheme();
+            document.body.classList.toggle('light-mode');
+            themeBtn.textContent = isDarkMode ? '☀️' : '🌙';
+            localStorage.setItem('proClockTheme', isDarkMode ? 'dark' : 'light');
         });
 
-        // ========== TASKS ==========
+        focusBtn.addEventListener('click', () => {
+            isFocusMode = !isFocusMode;
+            document.body.classList.toggle('focus-mode');
+            focusBtn.classList.toggle('active');
+            localStorage.setItem('proClockFocus', isFocusMode);
+        });
+
+        // TASKS
         function renderTasks() {
+            const taskCount = document.getElementById('task-count');
+            const completedCount = tasks.filter(t => t.completed).length;
+            taskCount.textContent = `(${tasks.length - completedCount}/${tasks.length})`;
+
             if (tasks.length === 0) {
                 tasksList.innerHTML = '<div class="empty-state">No tasks yet. Add one to get started!</div>';
                 return;
             }
 
-            tasksList.innerHTML = tasks.map(task => `
-                <div class="task-item ${task.completed ? 'completed' : ''}">
-                    <input 
-                        type="checkbox" 
-                        class="task-checkbox" 
-                        ${task.completed ? 'checked' : ''}
-                        onchange="toggleTask(${task.id})"
-                    >
-                    <span class="task-text">${escapeHtml(task.text)}</span>
-                    <button class="btn-delete" onclick="deleteTask(${task.id})">🗑️</button>
+            const sortedTasks = tasks.sort((a, b) => {
+                const priority = { high: 3, medium: 2, low: 1 };
+                return priority[b.priority] - priority[a.priority];
+            });
+
+            tasksList.innerHTML = sortedTasks.map(task => `
+                <div class="task-item-wrapper">
+                    <div class="task-item ${task.completed ? 'completed' : ''}" data-task-id="${task.id}">
+                        <div class="task-check-bg"></div>
+                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})">
+                        <span class="task-text">${escapeHtml(task.text)}</span>
+                        <span class="task-priority ${task.priority}">${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}</span>
+                        <button class="btn-delete" onclick="deleteTask(${task.id})">🗑️</button>
+                        <span class="task-swipe-hint">← Swipe</span>
+                    </div>
                 </div>
             `).join('');
+
+            // Add swipe handlers
+            attachSwipeHandlers();
+        }
+
+        // SWIPE-TO-COMPLETE
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let currentSwipeElement = null;
+
+        function attachSwipeHandlers() {
+            const taskItems = document.querySelectorAll('.task-item');
+            
+            taskItems.forEach(item => {
+                item.addEventListener('touchstart', handleSwipeStart, false);
+                item.addEventListener('touchmove', handleSwipeMove, false);
+                item.addEventListener('touchend', handleSwipeEnd, false);
+            });
+        }
+
+        function handleSwipeStart(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+            touchStartX = e.changedTouches[0].screenX;
+            currentSwipeElement = e.currentTarget;
+            currentSwipeElement.classList.add('swiping');
+        }
+
+        function handleSwipeMove(e) {
+            if (!currentSwipeElement) return;
+            touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            
+            // Swipe left to complete (threshold: 50px)
+            if (diff > 50) {
+                currentSwipeElement.classList.add('swiping-complete');
+            } else {
+                currentSwipeElement.classList.remove('swiping-complete');
+            }
+        }
+
+        function handleSwipeEnd(e) {
+            if (!currentSwipeElement) return;
+            const diff = touchStartX - touchEndX;
+            
+            currentSwipeElement.classList.remove('swiping');
+            
+            // If swiped more than 100px, complete the task
+            if (diff > 100) {
+                const taskId = parseInt(currentSwipeElement.dataset.taskId);
+                toggleTask(taskId);
+            }
+            
+            currentSwipeElement.classList.remove('swiping-complete');
+            currentSwipeElement = null;
         }
 
         function addTask() {
             const text = taskInput.value.trim();
+            const priority = taskPriority.value;
+            
             if (!text) return;
+            if (text.length > 200) {
+                alert('Task text is too long (max 200 characters)');
+                taskInput.value = text.substring(0, 200);
+                return;
+            }
+            if (tasks.length >= 100) {
+                alert('Maximum 100 tasks. Delete some to add more.');
+                return;
+            }
+            if (!['low', 'medium', 'high'].includes(priority)) {
+                console.error('Invalid priority');
+                return;
+            }
 
             tasks.push({
                 id: Date.now(),
                 text: text,
-                completed: false
+                priority: priority,
+                completed: false,
+                created: new Date().toISOString()
             });
 
             taskInput.value = '';
-            saveTasks();
-            renderTasks();
+            if (saveTasks()) {
+                renderTasks();
+            } else {
+                alert('Failed to save task. Storage might be full.');
+                tasks.pop();
+            }
         }
 
         window.toggleTask = (id) => {
@@ -726,7 +1219,22 @@
         };
 
         function saveTasks() {
-            localStorage.setItem('proClockTasks', JSON.stringify(tasks));
+            try {
+                const dataStr = JSON.stringify(tasks);
+                if (dataStr.length > 1000000) {
+                    console.warn('Task storage is large, consider cleaning up');
+                }
+                localStorage.setItem('proClockTasks', dataStr);
+                return true;
+            } catch (error) {
+                if (error.name === 'QuotaExceededError') {
+                    console.error('Storage quota exceeded');
+                    alert('Storage full! Please delete some tasks.');
+                } else {
+                    console.error('Failed to save tasks:', error);
+                }
+                return false;
+            }
         }
 
         function escapeHtml(text) {
@@ -735,39 +1243,160 @@
             return div.innerHTML;
         }
 
-        // ========== TAB NAVIGATION ==========
+        // TAB NAVIGATION
         tabBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const tabName = btn.dataset.tab;
-                
                 tabBtns.forEach(b => b.classList.remove('active'));
                 tabContents.forEach(c => c.classList.remove('active'));
-                
                 btn.classList.add('active');
                 document.getElementById(tabName).classList.add('active');
             });
         });
 
-        // ========== TASK INPUT ==========
+        // TASK INPUT
         btnAddTask.addEventListener('click', addTask);
         taskInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') addTask();
         });
 
-        // ========== INIT ==========
+        // SERVICE WORKER REGISTRATION
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('data:application/javascript,' + encodeURIComponent(`
+                    const CACHE = 'proclock-v1';
+                    self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.add('/'))));
+                    self.addEventListener('activate', e => e.waitUntil(caches.keys().then(names => Promise.all(names.filter(n => n !== CACHE).map(n => caches.delete(n))))));
+                    self.addEventListener('fetch', e => {
+                        if (e.request.method === 'GET') {
+                            e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).then(r => {
+                                if (r.status === 200) caches.open(CACHE).then(c => c.put(e.request, r.clone()));
+                                return r;
+                            }).catch(() => caches.match('/'))));
+                        }
+                    });
+                `)).catch(() => {});
+            });
+        }
+
+        // PAGE VISIBILITY
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                updateClock();
+            }
+        });
+
+        // ========== SETTINGS ==========
+        let showSeconds = true;
+        let use24HFormat = localStorage.getItem('proClockFormat24h') === 'true';
+
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('light-mode');
+            document.getElementById('dark-mode-toggle').classList.toggle('active');
+            localStorage.setItem('proClockTheme', isDarkMode ? 'dark' : 'light');
+        }
+
+        function toggleSeconds() {
+            showSeconds = !showSeconds;
+            localStorage.setItem('proClockShowSeconds', showSeconds);
+        }
+
+        function toggle24HFormat() {
+            use24HFormat = !use24HFormat;
+            localStorage.setItem('proClockFormat24h', use24HFormat);
+            updateClock();
+        }
+
+        function updateStats() {
+            const total = tasks.length;
+            const completed = tasks.filter(t => t.completed).length;
+            const rate = total === 0 ? 0 : Math.round((completed / total) * 100);
+            
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-completed').textContent = completed;
+            document.getElementById('stat-rate').textContent = rate + '%';
+            
+            // Storage size
+            try {
+                const size = JSON.stringify(localStorage).length;
+                const kb = (size / 1024).toFixed(1);
+                document.getElementById('stat-storage').textContent = kb + ' KB';
+            } catch (e) {
+                document.getElementById('stat-storage').textContent = 'N/A';
+            }
+        }
+
+        function exportData() {
+            const data = {
+                tasks: tasks,
+                exported: new Date().toISOString(),
+                version: '1.0.0'
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `proclock-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            alert('✓ Data exported successfully!');
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ This will delete ALL tasks and reset settings.\n\nAre you sure?')) {
+                if (confirm('This action cannot be undone. Are you absolutely sure?')) {
+                    tasks = [];
+                    localStorage.clear();
+                    isDarkMode = true;
+                    isFocusMode = false;
+                    
+                    document.body.classList.remove('light-mode');
+                    document.body.classList.remove('focus-mode');
+                    
+                    initTheme();
+                    renderTasks();
+                    updateStats();
+                    
+                    alert('✓ All data cleared. App reset to defaults.');
+                }
+            }
+        }
+
+        function initSettings() {
+            // Load settings
+            showSeconds = localStorage.getItem('proClockShowSeconds') !== 'false';
+            use24HFormat = localStorage.getItem('proClockFormat24h') === 'true';
+            
+            // Update UI
+            document.getElementById('show-seconds').checked = showSeconds;
+            document.getElementById('24h-format').checked = use24HFormat;
+            
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            if (isDarkMode) {
+                darkModeToggle.classList.add('active');
+            }
+            
+            updateStats();
+        }
+
+        // INIT
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
+            initSettings();
             updateClock();
             updateTimezones();
             fetchWeather();
             fetchIP();
             renderTasks();
+            updateStats();
 
-            // Update timezones every minute
             setInterval(updateTimezones, 60000);
-            
-            // Fetch weather every 30 minutes
             setInterval(fetchWeather, 30 * 60000);
+            setInterval(updateStats, 30000);
         });
     </script>
 </body>
