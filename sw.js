@@ -1,4 +1,4 @@
-const cacheName = 'kello-v1';
+const cacheName = 'smart-clock-v3';
 const assets = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
