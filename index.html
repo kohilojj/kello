@@ -11,768 +11,104 @@
     <link rel="manifest" href="data:application/json,{%22name%22:%22ProClock%20Pro%22,%22short_name%22:%22ProClock%22,%22description%22:%22Modern%20clock%20with%20tasks%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%230f172a%22,%22theme_color%22:%22%2300d9ff%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20192%20192%27%3E%3Crect%20fill=%27%230f172a%27%20width=%27192%27%20height=%27192%27/%3E%3Ccircle%20cx=%2796%27%20cy=%2796%27%20r=%2780%27%20fill=%27none%27%20stroke=%27%2300d9ff%27%20stroke-width=%274%27/%3E%3Cline%20x1=%2796%27%20y1=%2740%27%20x2=%2796%27%20y2=%2760%27%20stroke=%27%2300d9ff%27%20stroke-width=%273%27/%3E%3C/svg%3E%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22}]}">
     <title>ProClock Pro</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --accent: #00d9ff;
-            --accent-dark: #0099cc;
-            --bg: #0f172a;
-            --bg-light: #1e293b;
-            --border: #334155;
-            --text-primary: #ffffff;
-            --text-secondary: #94a3b8;
-            --text-tertiary: #64748b;
-        }
-
-        body {
-            background: linear-gradient(135deg, #0f172a 0%, #1a1f35 100%);
-            color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            overflow-x: hidden;
-            min-height: 100vh;
-            transition: all 0.3s ease;
-        }
-
-        body.focus-mode {
-            background: linear-gradient(135deg, #0a0e1a 0%, #0f1829 100%);
-        }
-
-        .top-bar {
-            backdrop-filter: blur(20px);
-            background: rgba(15, 23, 42, 0.5);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .top-bar-content {
-            max-width: 80rem;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .ip-display {
-            font-family: 'Courier New', monospace;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .status-dot {
-            width: 0.5rem;
-            height: 0.5rem;
-            background: var(--accent);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .top-controls {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .theme-toggle, .focus-toggle {
-            background: var(--bg-light);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1rem;
-        }
-
-        .theme-toggle:hover, .focus-toggle:hover {
-            background: var(--border);
-            color: var(--accent);
-        }
-
-        .focus-toggle.active {
-            background: var(--accent);
-            color: var(--bg);
-        }
-
-        .container {
-            max-width: 80rem;
-            margin: 0 auto;
-            padding: 3rem 2rem;
-        }
-
-        .tab-nav {
-            display: flex;
-            gap: 2rem;
-            margin-bottom: 3rem;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 1rem;
-        }
-
-        .tab-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            padding: 0.5rem 0;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            position: relative;
-        }
-
-        .tab-btn:hover {
-            color: var(--text-primary);
-        }
-
-        .tab-btn.active {
-            color: var(--accent);
-        }
-
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: -1rem;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--accent);
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .clock-section {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .main-clock {
-            font-size: clamp(4rem, 15vw, 9rem);
-            font-weight: 100;
-            letter-spacing: -2px;
-            margin-bottom: 1rem;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .clock-seconds {
-            color: var(--accent);
-            font-size: clamp(2rem, 8vw, 4rem);
-            font-weight: 300;
-        }
-
-        .date-display {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 1.5rem;
-        }
-
-        .progress-section {
-            margin-bottom: 3rem;
-        }
-
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.75rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        .progress-bar {
-            height: 4px;
-            background: var(--bg-light);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-dark) 100%);
-            box-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
-            transition: width 1s linear;
-            border-radius: 4px;
-        }
-
-        .weather-card {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.4));
-            border: 1px solid var(--border);
-            border-radius: 1rem;
-            padding: 2rem;
-            margin-bottom: 3rem;
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .weather-card:hover {
-            border-color: var(--accent);
-            box-shadow: 0 0 20px rgba(0, 217, 255, 0.1);
-        }
-
-        .weather-icon {
-            font-size: 3.5rem;
-        }
-
-        .weather-icon.loading {
-            animation: spin 2s linear infinite;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .weather-info h3 {
-            font-size: 2rem;
-            font-weight: 300;
-            margin-bottom: 0.5rem;
-        }
-
-        .weather-info p {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-
-        .timezones-section {
-            margin-bottom: 3rem;
-        }
-
-        .section-title {
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 1.5rem;
-            font-weight: 600;
-        }
-
-        .timezones-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .timezone-card {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.2));
-            border: 1px solid var(--border);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .timezone-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px rgba(0, 217, 255, 0.15);
-        }
-
-        .timezone-name {
-            color: var(--text-tertiary);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
-        }
-
-        .timezone-time {
-            font-size: 2.5rem;
-            font-weight: 300;
-            font-variant-numeric: tabular-nums;
-            margin-bottom: 0.5rem;
-        }
-
-        .timezone-code {
-            color: var(--accent);
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .tasks-container {
-            max-width: 50rem;
-        }
-
-        .task-input-group {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .task-input {
-            flex: 1;
-            min-width: 200px;
-            background: var(--bg-light);
-            border: 1px solid var(--border);
-            border-radius: 0.75rem;
-            padding: 1rem;
-            color: var(--text-primary);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .task-input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 15px rgba(0, 217, 255, 0.2);
-        }
-
-        .task-input::placeholder {
-            color: var(--text-tertiary);
-        }
-
-        #task-priority {
-            background: var(--bg-light);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            padding: 0.75rem;
-            border-radius: 0.75rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        #task-priority:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .btn-add {
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-            color: #000;
-            border: none;
-            border-radius: 0.75rem;
-            padding: 1rem 2rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1rem;
-            white-space: nowrap;
-        }
-
-        .btn-add:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 217, 255, 0.3);
-        }
-
-        .btn-add:active {
-            transform: translateY(0);
-        }
-
-        .tasks-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .task-item {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.2));
-            border: 2px solid var(--border);
-            border-radius: 0.75rem;
-            padding: 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            cursor: grab;
-            user-select: none;
-            touch-action: pan-y;
-        }
-
-        .task-item:active {
-            cursor: grabbing;
-        }
-
-        .task-item:hover {
-            border-color: var(--accent);
-            transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(0, 217, 255, 0.1);
-        }
-
-        .task-item.swiping {
-            opacity: 0.8;
-        }
-
-        .task-item.completed {
-            opacity: 0.5;
-            border-color: var(--border);
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.2), rgba(15, 23, 42, 0.1));
-        }
-
-        .task-item.completed:hover {
-            transform: translateX(0);
-        }
-
-        .task-check-bg {
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 0;
-            background: linear-gradient(90deg, rgba(16, 185, 129, 0.2), transparent);
-            transition: width 0.3s ease;
-            pointer-events: none;
-        }
-
-        .task-item.swiping-complete .task-check-bg {
-            width: 100%;
-        }
-
-        .task-checkbox {
-            width: 1.25rem;
-            height: 1.25rem;
-            cursor: pointer;
-            accent-color: var(--accent);
-            flex-shrink: 0;
-            position: relative;
-            z-index: 1;
-        }
-
-        .task-text {
-            flex: 1;
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 1;
-            word-break: break-word;
-        }
-
-        .task-item.completed .task-text {
-            text-decoration: line-through;
-            color: var(--text-tertiary);
-        }
-
-        .task-item-wrapper {
-            position: relative;
-        }
-
-        .task-swipe-hint {
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.7rem;
-            color: var(--text-tertiary);
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            pointer-events: none;
-            white-space: nowrap;
-        }
-
-        .task-item:hover .task-swipe-hint {
-            opacity: 0.5;
-        }
-
-        .task-priority {
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.7rem;
-            font-weight: 600;
-            margin-left: auto;
-            margin-right: 0.5rem;
-            flex-shrink: 0;
-        }
-
-        .task-priority.high {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ff6b6b;
-        }
-
-        .task-priority.medium {
-            background: rgba(251, 146, 60, 0.2);
-            color: #ffa500;
-        }
-
-        .task-priority.low {
-            background: rgba(34, 197, 94, 0.2);
-            color: #6ee7b7;
-        }
-
-        .btn-delete {
-            background: none;
-            border: none;
-            color: var(--text-tertiary);
-            cursor: pointer;
-            padding: 0.5rem;
-            transition: all 0.3s ease;
-            font-size: 1.25rem;
-            flex-shrink: 0;
-        }
-
-        .btn-delete:hover {
-            color: #ff4444;
-            transform: scale(1.2);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem 2rem;
-            color: var(--text-tertiary);
-        }
-
-        .settings-container {
-            max-width: 60rem;
-        }
-
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
-        .settings-card {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.2));
-            border: 2px solid var(--border);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .settings-card:hover {
-            border-color: var(--accent);
-            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .settings-card-header {
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .settings-card-header h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin: 0;
-        }
-
-        .settings-option {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid rgba(51, 65, 85, 0.3);
-        }
-
-        .settings-option:last-child {
-            border-bottom: none;
-        }
-
-        .settings-label {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .settings-label span:first-child {
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        .settings-desc {
-            color: var(--text-tertiary);
-            font-size: 0.75rem;
-        }
-
-        .settings-checkbox {
-            width: 1.25rem;
-            height: 1.25rem;
-            cursor: pointer;
-            accent-color: var(--accent);
-        }
-
-        .toggle-switch {
-            background: var(--bg-light);
-            border: 2px solid var(--border);
-            width: 50px;
-            height: 26px;
-            border-radius: 13px;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.3s ease;
-            padding: 2px;
-        }
-
-        .toggle-switch::before {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: var(--border);
-            border-radius: 50%;
-            left: 2px;
-            top: 50%;
-            transform: translateY(-50%);
-            transition: all 0.3s ease;
-        }
-
-        .toggle-switch:checked::before,
-        .toggle-switch.active::before {
-            left: 26px;
-            background: var(--accent);
-        }
-
-        .toggle-switch:hover {
-            border-color: var(--accent);
-        }
-
-        .settings-btn {
-            display: block;
-            width: 100%;
-            padding: 0.75rem 1rem;
-            margin-bottom: 0.75rem;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-            color: #000;
-            border: none;
-            border-radius: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .settings-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0, 217, 255, 0.3);
-        }
-
-        .settings-btn:last-child {
-            margin-bottom: 0;
-        }
-
-        .settings-btn.danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: #fff;
-        }
-
-        .settings-btn.danger:hover {
-            box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
-        }
-
-        .settings-info {
-            padding: 0.5rem 0;
-            font-size: 0.95rem;
-            line-height: 1.8;
-        }
-
-        .settings-info p {
-            margin: 0.5rem 0;
-            color: var(--text-primary);
-        }
-
-        .settings-info a {
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .settings-info a:hover {
-            text-decoration: underline;
-        }
-
-        @media (max-width: 768px) {
-            .settings-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        body.focus-mode .tab-nav,
-        body.focus-mode .timezones-section,
-        body.focus-mode .weather-card {
-            display: none;
-        }
-
-        body.focus-mode .clock-section {
-            margin-bottom: 6rem;
-        }
-
-        body.focus-mode .main-clock {
-            font-size: clamp(6rem, 20vw, 12rem);
-        }
-
-        body.light-mode {
-            --accent: #0099cc;
-            --accent-dark: #0077aa;
-            --bg: #f8fafc;
-            --bg-light: #f1f5f9;
-            --border: #e2e8f0;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --text-tertiary: #94a3b8;
-        }
-
-        body.light-mode {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 2rem 1rem;
-            }
-
-            .weather-card {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .timezones-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .tab-nav {
-                gap: 1rem;
-            }
-
-            .main-clock {
-                font-size: clamp(3rem, 12vw, 6rem);
-            }
-
-            .task-input-group {
-                flex-direction: column;
-            }
-
-            .task-input {
-                min-width: auto;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --accent: #00d9ff; --accent-dark: #0099cc; --bg: #0f172a; --bg-light: #1e293b; --border: #334155; --text-primary: #ffffff; --text-secondary: #94a3b8; --text-tertiary: #64748b; }
+        body { background: linear-gradient(135deg, #0f172a 0%, #1a1f35 100%); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; overflow-x: hidden; min-height: 100vh; transition: all 0.3s ease; }
+        body.focus-mode { background: linear-gradient(135deg, #0a0e1a 0%, #0f1829 100%); }
+        .top-bar { backdrop-filter: blur(20px); background: rgba(15, 23, 42, 0.5); border-bottom: 1px solid var(--border); padding: 1rem 2rem; position: sticky; top: 0; z-index: 100; }
+        .top-bar-content { max-width: 80rem; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .ip-display { font-family: 'Courier New', monospace; font-size: 0.875rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem; }
+        .status-dot { width: 0.5rem; height: 0.5rem; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .top-controls { display: flex; gap: 1rem; }
+        .theme-toggle, .focus-toggle { background: var(--bg-light); border: 1px solid var(--border); color: var(--text-secondary); padding: 0.5rem 0.75rem; border-radius: 0.5rem; cursor: pointer; transition: all 0.3s ease; font-size: 1rem; }
+        .theme-toggle:hover, .focus-toggle:hover { background: var(--border); color: var(--accent); }
+        .focus-toggle.active { background: var(--accent); color: var(--bg); }
+        .container { max-width: 80rem; margin: 0 auto; padding: 3rem 2rem; }
+        .tab-nav { display: flex; gap: 2rem; margin-bottom: 3rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+        .tab-btn { background: none; border: none; color: var(--text-secondary); font-size: 1rem; font-weight: 500; cursor: pointer; padding: 0.5rem 0; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem; position: relative; }
+        .tab-btn:hover { color: var(--text-primary); }
+        .tab-btn.active { color: var(--accent); }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -1rem; left: 0; right: 0; height: 2px; background: var(--accent); }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .clock-section { text-align: center; margin-bottom: 4rem; }
+        .main-clock { font-size: clamp(4rem, 15vw, 9rem); font-weight: 100; letter-spacing: -2px; margin-bottom: 1rem; font-variant-numeric: tabular-nums; }
+        .clock-seconds { color: var(--accent); font-size: clamp(2rem, 8vw, 4rem); font-weight: 300; }
+        .date-display { color: var(--text-secondary); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 2px; margin-top: 1.5rem; }
+        .progress-section { margin-bottom: 3rem; }
+        .progress-label { display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.875rem; color: var(--text-secondary); }
+        .progress-bar { height: 4px; background: var(--bg-light); border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent) 0%, var(--accent-dark) 100%); box-shadow: 0 0 15px rgba(0, 217, 255, 0.5); transition: width 1s linear; border-radius: 4px; }
+        .weather-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.4)); border: 1px solid var(--border); border-radius: 1rem; padding: 2rem; margin-bottom: 3rem; display: flex; gap: 2rem; align-items: center; backdrop-filter: blur(10px); transition: all 0.3s ease; }
+        .weather-card:hover { border-color: var(--accent); box-shadow: 0 0 20px rgba(0, 217, 255, 0.1); }
+        .weather-icon { font-size: 3.5rem; }
+        .weather-info h3 { font-size: 2rem; font-weight: 300; margin-bottom: 0.5rem; }
+        .weather-info p { color: var(--text-secondary); font-size: 0.875rem; }
+        .timezones-section { margin-bottom: 3rem; }
+        .section-title { color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1.5rem; font-weight: 600; }
+        .timezones-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .timezone-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.2)); border: 1px solid var(--border); border-radius: 1rem; padding: 1.5rem; transition: all 0.3s ease; }
+        .timezone-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0, 217, 255, 0.15); }
+        .timezone-name { color: var(--text-tertiary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
+        .timezone-time { font-size: 2.5rem; font-weight: 300; font-variant-numeric: tabular-nums; margin-bottom: 0.5rem; }
+        .timezone-code { color: var(--accent); font-size: 0.75rem; font-weight: 600; }
+        .tasks-container { max-width: 50rem; }
+        .task-input-group { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .task-input { flex: 1; min-width: 200px; background: var(--bg-light); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1rem; color: var(--text-primary); font-size: 1rem; transition: all 0.3s ease; }
+        .task-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 217, 255, 0.2); }
+        #task-priority { background: var(--bg-light); border: 1px solid var(--border); color: var(--text-primary); padding: 0.75rem; border-radius: 0.75rem; cursor: pointer; }
+        .btn-add { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); color: #000; border: none; border-radius: 0.75rem; padding: 1rem 2rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem; font-size: 1rem; white-space: nowrap; }
+        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0, 217, 255, 0.3); }
+        .tasks-list { display: flex; flex-direction: column; gap: 1rem; }
+        .task-item { background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.2)); border: 2px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; transition: all 0.3s ease; position: relative; overflow: hidden; cursor: grab; user-select: none; }
+        .task-item:hover { border-color: var(--accent); transform: translateX(4px); box-shadow: 0 4px 12px rgba(0, 217, 255, 0.1); }
+        .task-item.completed { opacity: 0.5; border-color: var(--border); background: linear-gradient(135deg, rgba(30, 41, 59, 0.2), rgba(15, 23, 42, 0.1)); }
+        .task-checkbox { width: 1.25rem; height: 1.25rem; cursor: pointer; accent-color: var(--accent); flex-shrink: 0; }
+        .task-text { flex: 1; transition: all 0.3s ease; word-break: break-word; }
+        .task-item.completed .task-text { text-decoration: line-through; color: var(--text-tertiary); }
+        .task-priority { padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.7rem; font-weight: 600; margin-left: auto; margin-right: 0.5rem; flex-shrink: 0; }
+        .task-priority.high { background: rgba(239, 68, 68, 0.2); color: #ff6b6b; }
+        .task-priority.medium { background: rgba(251, 146, 60, 0.2); color: #ffa500; }
+        .task-priority.low { background: rgba(34, 197, 94, 0.2); color: #6ee7b7; }
+        .btn-delete { background: none; border: none; color: var(--text-tertiary); cursor: pointer; padding: 0.5rem; transition: all 0.3s ease; font-size: 1.25rem; flex-shrink: 0; }
+        .btn-delete:hover { color: #ff4444; transform: scale(1.2); }
+        .empty-state { text-align: center; padding: 3rem 2rem; color: var(--text-tertiary); }
+        .settings-container { max-width: 60rem; }
+        .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+        .settings-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.2)); border: 2px solid var(--border); border-radius: 1rem; padding: 1.5rem; transition: all 0.3s ease; }
+        .settings-card:hover { border-color: var(--accent); box-shadow: 0 8px 20px rgba(0, 217, 255, 0.1); transform: translateY(-2px); }
+        .settings-card-header { margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+        .settings-card-header h3 { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin: 0; }
+        .settings-option { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid rgba(51, 65, 85, 0.3); }
+        .settings-checkbox { width: 1.25rem; height: 1.25rem; cursor: pointer; accent-color: var(--accent); }
+        .settings-btn { width: 100%; padding: 0.75rem 1rem; margin-bottom: 0.75rem; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); color: #000; border: none; border-radius: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem; }
+        .settings-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0, 217, 255, 0.3); }
+        .settings-info { padding: 0.5rem 0; font-size: 0.95rem; line-height: 1.8; }
+        .settings-info p { margin: 0.5rem 0; color: var(--text-primary); }
+        .settings-info a { color: var(--accent); text-decoration: none; font-weight: 500; }
+        .premium-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .premium-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.2)); border: 2px solid var(--border); border-radius: 1rem; padding: 1.5rem; transition: all 0.4s ease; }
+        .premium-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0, 217, 255, 0.15); }
+        .premium-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+        .premium-header h3 { font-size: 1.1rem; font-weight: 600; margin: 0; }
+        .premium-price { font-size: 1.25rem; font-weight: 700; color: var(--accent); background: rgba(0, 217, 255, 0.1); padding: 0.5rem 1rem; border-radius: 0.5rem; }
+        .premium-desc { color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1.5rem; line-height: 1.5; }
+        .premium-btn { width: 100%; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); color: #000; border: none; border-radius: 0.75rem; padding: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-size: 0.95rem; margin-bottom: 0.75rem; }
+        .premium-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 217, 255, 0.3); }
+        .premium-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .premium-status { display: block; font-size: 0.875rem; padding: 0.75rem; border-radius: 0.5rem; text-align: center; font-weight: 600; }
+        .premium-status.unlocked { background: rgba(34, 197, 94, 0.2); color: #6ee7b7; }
+        .error-message { display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 0.75rem; color: #ff6b6b; font-size: 0.875rem; }
+        body.light-mode { --accent: #0099cc; --accent-dark: #0077aa; --bg: #f8fafc; --bg-light: #f1f5f9; --border: #e2e8f0; --text-primary: #0f172a; --text-secondary: #475569; --text-tertiary: #94a3b8; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); }
+        body.focus-mode .tab-nav, body.focus-mode .timezones-section, body.focus-mode .weather-card { display: none; }
+        body.focus-mode .clock-section { margin-bottom: 6rem; }
+        body.focus-mode .main-clock { font-size: clamp(6rem, 20vw, 12rem); }
+        @media (max-width: 768px) { .container { padding: 2rem 1rem; } .weather-card { flex-direction: column; text-align: center; } .timezones-grid { grid-template-columns: 1fr; } .tab-nav { gap: 1rem; } .task-input-group { flex-direction: column; } }
     </style>
 </head>
 <body>
-
     <div class="top-bar">
         <div class="top-bar-content">
             <div class="ip-display">
@@ -790,6 +126,7 @@
         <div class="tab-nav">
             <button class="tab-btn active" data-tab="clock">⏰ Clock</button>
             <button class="tab-btn" data-tab="tasks">✓ Tasks</button>
+            <button class="tab-btn" data-tab="premium">👑 Premium</button>
             <button class="tab-btn" data-tab="settings">⚙️ Settings</button>
         </div>
 
@@ -800,7 +137,6 @@
                 </div>
                 <div class="date-display" id="date-display">Loading...</div>
             </div>
-
             <div class="progress-section">
                 <div class="progress-label">
                     <span>Day Progress</span>
@@ -810,7 +146,6 @@
                     <div class="progress-fill" id="progress-fill"></div>
                 </div>
             </div>
-
             <div class="weather-card">
                 <div class="weather-icon" id="weather-icon">☁️</div>
                 <div class="weather-info">
@@ -818,7 +153,6 @@
                     <p id="weather-desc">Loading weather...</p>
                 </div>
             </div>
-
             <div class="timezones-section">
                 <div class="section-title">Time Zones</div>
                 <div class="timezones-grid" id="timezones-grid"></div>
@@ -828,7 +162,6 @@
         <div id="tasks" class="tab-content">
             <div class="tasks-container">
                 <div class="section-title" style="margin-bottom: 2rem;">Tasks & To-Do <span id="task-count" style="color: var(--accent);">(0)</span></div>
-                
                 <div class="task-input-group">
                     <input type="text" class="task-input" id="task-input" placeholder="Add a new task...">
                     <select id="task-priority">
@@ -838,9 +171,80 @@
                     </select>
                     <button class="btn-add" id="btn-add-task">➕ Add</button>
                 </div>
-
+                <div id="error-message" class="error-message"></div>
                 <div class="tasks-list" id="tasks-list">
                     <div class="empty-state">No tasks yet. Add one to get started!</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="premium" class="tab-content">
+            <div style="max-width: 60rem;">
+                <div class="section-title" style="margin-bottom: 3rem;">👑 Premium Features</div>
+                <div class="premium-grid">
+                    <div class="premium-card">
+                        <div class="premium-header">
+                            <h3>⏱️ Pomodoro Timer</h3>
+                            <span class="premium-price">€2.99</span>
+                        </div>
+                        <p class="premium-desc">25/5 min work/break cycles with notifications</p>
+                        <button class="premium-btn" onclick="handlePremium('pomodoro', '2.99')">Unlock Feature</button>
+                        <span id="status-pomodoro" class="premium-status"></span>
+                    </div>
+                    <div class="premium-card">
+                        <div class="premium-header">
+                            <h3>🔔 Smart Notifications</h3>
+                            <span class="premium-price">€3.99</span>
+                        </div>
+                        <p class="premium-desc">Get reminded about deadlines and tasks with custom alerts</p>
+                        <button class="premium-btn" onclick="handlePremium('notifications', '3.99')">Unlock Feature</button>
+                        <span id="status-notifications" class="premium-status"></span>
+                    </div>
+                    <div class="premium-card">
+                        <div class="premium-header">
+                            <h3>📊 Analytics & Stats</h3>
+                            <span class="premium-price">€4.99</span>
+                        </div>
+                        <p class="premium-desc">Track productivity with detailed charts and insights</p>
+                        <button class="premium-btn" onclick="handlePremium('analytics', '4.99')">Unlock Feature</button>
+                        <span id="status-analytics" class="premium-status"></span>
+                    </div>
+                    <div class="premium-card">
+                        <div class="premium-header">
+                            <h3>☁️ Cloud Sync</h3>
+                            <span class="premium-price">€5.99</span>
+                        </div>
+                        <p class="premium-desc">Sync tasks across all your devices automatically</p>
+                        <button class="premium-btn" onclick="handlePremium('cloud', '5.99')">Unlock Feature</button>
+                        <span id="status-cloud" class="premium-status"></span>
+                    </div>
+                    <div class="premium-card">
+                        <div class="premium-header">
+                            <h3>🎨 Custom Themes</h3>
+                            <span class="premium-price">€3.99</span>
+                        </div>
+                        <p class="premium-desc">Access to 10+ exclusive color themes and designs</p>
+                        <button class="premium-btn" onclick="handlePremium('themes', '3.99')">Unlock Feature</button>
+                        <span id="status-themes" class="premium-status"></span>
+                    </div>
+                    <div class="premium-card">
+                        <div class="premium-header">
+                            <h3>🌍 Unlimited Timezones</h3>
+                            <span class="premium-price">€2.99</span>
+                        </div>
+                        <p class="premium-desc">Add and track unlimited timezones worldwide</p>
+                        <button class="premium-btn" onclick="handlePremium('timezones', '2.99')">Unlock Feature</button>
+                        <span id="status-timezones" class="premium-status"></span>
+                    </div>
+                </div>
+                <div style="margin-top: 3rem; padding: 2rem; background: rgba(0,217,255,0.05); border: 1px solid var(--border); border-radius: 1rem;">
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">💰 <strong>Payment & Discount Codes</strong></p>
+                    <p style="color: var(--text-tertiary); font-size: 0.875rem; margin-bottom: 1rem;">Pay with MetaMask (ETH/USDT). After payment, email transaction hash to natsaerkki@gmail.com and feature unlocks within 24h.</p>
+                    <p style="color: var(--text-tertiary); font-size: 0.875rem;">Have a discount code? Enter it when unlocking!</p>
+                </div>
+                <div style="margin-top: 2rem; padding: 1.5rem; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(6,182,212,0.1)); border: 1px solid var(--accent); border-radius: 1rem;">
+                    <p style="color: var(--accent); margin-bottom: 0.5rem; font-weight: 600;">🎁 Free Forever Option</p>
+                    <p style="color: var(--text-secondary); font-size: 0.875rem;">Want all features free? Contact <a href="mailto:natsaerkki@gmail.com" style="color: var(--accent); text-decoration: none;">natsaerkki@gmail.com</a> and get premium access if you share feedback!</p>
                 </div>
             </div>
         </div>
@@ -848,53 +252,36 @@
         <div id="settings" class="tab-content">
             <div class="settings-container">
                 <div class="section-title" style="margin-bottom: 2rem;">Settings & Preferences</div>
-                
                 <div class="settings-grid">
-                    <!-- Theme Section -->
                     <div class="settings-card">
                         <div class="settings-card-header">
                             <h3>🎨 Appearance</h3>
                         </div>
                         <div class="settings-option">
-                            <div class="settings-label">
-                                <span>Dark Mode</span>
-                                <span class="settings-desc">Better for eyes at night</span>
+                            <div>
+                                <span style="color: var(--text-primary); font-weight: 500;">Dark Mode</span>
+                                <p style="color: var(--text-tertiary); font-size: 0.75rem; margin: 0.25rem 0 0 0;">Better for eyes at night</p>
                             </div>
-                            <button class="toggle-switch" id="dark-mode-toggle" onclick="toggleDarkMode()"></button>
+                            <input type="checkbox" class="settings-checkbox" id="dark-mode-toggle" onchange="toggleDarkMode()">
                         </div>
                     </div>
-
-                    <!-- Time Format Section -->
                     <div class="settings-card">
                         <div class="settings-card-header">
-                            <h3>⏰ Time Display</h3>
+                            <h3>📊 Statistics</h3>
                         </div>
-                        <div class="settings-option">
-                            <div class="settings-label">
-                                <span>Show Seconds</span>
-                                <span class="settings-desc">Display seconds in clock</span>
-                            </div>
-                            <input type="checkbox" class="settings-checkbox" id="show-seconds" checked onchange="toggleSeconds()">
-                        </div>
-                        <div class="settings-option">
-                            <div class="settings-label">
-                                <span>24-Hour Format</span>
-                                <span class="settings-desc">Use 24-hour time display</span>
-                            </div>
-                            <input type="checkbox" class="settings-checkbox" id="24h-format" onchange="toggle24HFormat()">
+                        <div class="settings-info">
+                            <p>Total Tasks: <strong id="stat-total">0</strong></p>
+                            <p>Completed: <strong id="stat-completed" style="color: #6ee7b7;">0</strong></p>
+                            <p>Completion Rate: <strong id="stat-rate" style="color: var(--accent);">0%</strong></p>
                         </div>
                     </div>
-
-                    <!-- Data Section -->
                     <div class="settings-card">
                         <div class="settings-card-header">
                             <h3>💾 Data Management</h3>
                         </div>
                         <button class="settings-btn" onclick="exportData()">📥 Export Data</button>
-                        <button class="settings-btn danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+                        <button class="settings-btn" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #fff;" onclick="clearAllData()">🗑️ Clear All Data</button>
                     </div>
-
-                    <!-- About Section -->
                     <div class="settings-card">
                         <div class="settings-card-header">
                             <h3>ℹ️ About</h3>
@@ -906,57 +293,34 @@
                             <p style="color: var(--text-tertiary); margin-top: 1rem; font-size: 0.875rem;">📧 Support: <a href="mailto:natsaerkki@gmail.com" style="color: var(--accent); text-decoration: none;">natsaerkki@gmail.com</a></p>
                         </div>
                     </div>
-
-                    <!-- Stats Section -->
-                    <div class="settings-card">
-                        <div class="settings-card-header">
-                            <h3>📊 Statistics</h3>
-                        </div>
-                        <div class="settings-info">
-                            <p>Total Tasks: <strong id="stat-total">0</strong></p>
-                            <p>Completed: <strong id="stat-completed" style="color: #6ee7b7;">0</strong></p>
-                            <p>Completion Rate: <strong id="stat-rate" style="color: var(--accent);">0%</strong></p>
-                            <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-tertiary);">App Storage: <strong id="stat-storage">0 KB</strong></p>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Professional Footer -->
     <div style="text-align: center; padding: 3rem 2rem; background: linear-gradient(180deg, transparent 0%, rgba(0,217,255,0.05) 100%); border-top: 2px solid var(--border); margin-top: 4rem;">
         <div style="max-width: 80rem; margin: 0 auto;">
             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">ProClock Pro</h3>
             <p style="color: var(--text-secondary); margin-bottom: 1rem;">Professional Productivity & Time Management Platform</p>
-            
-            <div style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 1.5rem; flex-wrap: wrap; font-size: 0.875rem;">
-                <div style="color: var(--text-tertiary);">
-                    <strong style="color: var(--text-primary);">Version:</strong> 1.0.0
-                </div>
-                <div style="color: var(--text-tertiary);">
-                    <strong style="color: var(--text-primary);">Status:</strong> <span style="color: #6ee7b7;">Active</span>
-                </div>
-                <div style="color: var(--text-tertiary);">
-                    <strong style="color: var(--text-primary);">Users:</strong> <span id="user-count" style="color: var(--accent);">1</span>
-                </div>
-            </div>
-            
-            <p style="color: var(--text-tertiary); font-size: 0.875rem; margin-bottom: 1rem;">
-                Need help? <a href="mailto:natsaerkki@gmail.com?subject=ProClock%20Pro%20Support" style="color: var(--accent); text-decoration: none; font-weight: 600;">Contact Support</a> or check Settings for more options
-            </p>
-            
-            <p style="color: var(--text-tertiary); font-size: 0.75rem;">
-                © 2024 ProClock Pro. All rights reserved. | <a href="mailto:natsaerkki@gmail.com" style="color: var(--accent); text-decoration: none;">natsaerkki@gmail.com</a>
-            </p>
+            <p style="color: var(--text-tertiary); font-size: 0.875rem;">© 2024 ProClock Pro. All rights reserved. | <a href="mailto:natsaerkki@gmail.com" style="color: var(--accent); text-decoration: none;">natsaerkki@gmail.com</a></p>
         </div>
     </div>
 
     <script>
-        // STATE
         let isDarkMode = localStorage.getItem('proClockTheme') === 'dark';
         let isFocusMode = localStorage.getItem('proClockFocus') === 'true';
         let tasks = JSON.parse(localStorage.getItem('proClockTasks')) || [];
+        let premiumFeatures = JSON.parse(localStorage.getItem('proClockPremium')) || {};
+
+        const discountCodes = {
+            'koodi89': { discount: 100 },
+            'supporter2024': { discount: 100 },
+            'proclock100': { discount: 100 }
+        };
+
+        const cryptoAddresses = {
+            'eth': '0x1234567890123456789012345678901234567890'
+        };
 
         const timezones = [
             { name: 'Helsinki', offset: 2, code: 'EET' },
@@ -964,7 +328,6 @@
             { name: 'New York', offset: -5, code: 'EST' },
         ];
 
-        // DOM ELEMENTS
         const clockHours = document.getElementById('clock-hours');
         const clockMinutes = document.getElementById('clock-minutes');
         const clockSeconds = document.getElementById('clock-seconds');
@@ -980,33 +343,27 @@
         const taskInput = document.getElementById('task-input');
         const taskPriority = document.getElementById('task-priority');
         const btnAddTask = document.getElementById('btn-add-task');
+        const errorMessage = document.getElementById('error-message');
         const tasksList = document.getElementById('tasks-list');
         const timezonesGrid = document.getElementById('timezones-grid');
         const tabBtns = document.querySelectorAll('.tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
 
-        // CLOCK UPDATE
         function updateClock() {
             const now = new Date();
-            
             clockHours.textContent = String(now.getHours()).padStart(2, '0');
             clockMinutes.textContent = String(now.getMinutes()).padStart(2, '0');
             clockSeconds.textContent = String(now.getSeconds()).padStart(2, '0');
-
             const dateOptions = { weekday: 'long', month: 'short', day: 'numeric' };
             dateDisplay.textContent = now.toLocaleDateString('en-US', dateOptions).toUpperCase();
-
             const totalSeconds = 86400;
             const currentSeconds = (now.getHours() * 3600) + (now.getMinutes() * 60) + now.getSeconds();
             const progress = (currentSeconds / totalSeconds) * 100;
-            
             progressFill.style.width = progress + '%';
             progressPercent.textContent = progress.toFixed(4) + '%';
-
             requestAnimationFrame(updateClock);
         }
 
-        // TIMEZONE DISPLAY
         function updateTimezones() {
             timezonesGrid.innerHTML = timezones.map(tz => {
                 const now = new Date();
@@ -1014,18 +371,10 @@
                 const tzTime = new Date(utc + 3600000 * tz.offset);
                 const hours = String(tzTime.getHours()).padStart(2, '0');
                 const minutes = String(tzTime.getMinutes()).padStart(2, '0');
-
-                return `
-                    <div class="timezone-card">
-                        <div class="timezone-name">${tz.name}</div>
-                        <div class="timezone-time">${hours}:${minutes}</div>
-                        <div class="timezone-code">${tz.code}</div>
-                    </div>
-                `;
+                return `<div class="timezone-card"><div class="timezone-name">${tz.name}</div><div class="timezone-time">${hours}:${minutes}</div><div class="timezone-code">${tz.code}</div></div>`;
             }).join('');
         }
 
-        // WEATHER
         async function fetchWeather() {
             try {
                 const res = await fetch('https://wttr.in/?format=j1');
@@ -1033,10 +382,8 @@
                 const current = data.current_condition[0];
                 const temp = Math.round(current.temp_C);
                 const desc = current.weatherDesc[0].value;
-                
                 weatherTemp.textContent = temp + '°C';
                 weatherDesc.textContent = desc;
-
                 if (temp > 15) weatherIcon.textContent = '☀️';
                 else if (temp > 0) weatherIcon.textContent = '⛅';
                 else weatherIcon.textContent = '❄️';
@@ -1046,7 +393,6 @@
             }
         }
 
-        // IP ADDRESS
         async function fetchIP() {
             try {
                 const res = await fetch('https://ipapi.co/json/');
@@ -1057,7 +403,6 @@
             }
         }
 
-        // THEME & FOCUS MODE
         function initTheme() {
             if (isDarkMode) {
                 document.body.classList.add('light-mode');
@@ -1065,7 +410,6 @@
             } else {
                 themeBtn.textContent = '🌙';
             }
-            
             if (isFocusMode) {
                 document.body.classList.add('focus-mode');
                 focusBtn.classList.add('active');
@@ -1086,122 +430,51 @@
             localStorage.setItem('proClockFocus', isFocusMode);
         });
 
-        // TASKS
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+
         function renderTasks() {
             const taskCount = document.getElementById('task-count');
             const completedCount = tasks.filter(t => t.completed).length;
             taskCount.textContent = `(${tasks.length - completedCount}/${tasks.length})`;
-
             if (tasks.length === 0) {
                 tasksList.innerHTML = '<div class="empty-state">No tasks yet. Add one to get started!</div>';
                 return;
             }
-
             const sortedTasks = tasks.sort((a, b) => {
                 const priority = { high: 3, medium: 2, low: 1 };
                 return priority[b.priority] - priority[a.priority];
             });
-
-            tasksList.innerHTML = sortedTasks.map(task => `
-                <div class="task-item-wrapper">
-                    <div class="task-item ${task.completed ? 'completed' : ''}" data-task-id="${task.id}">
-                        <div class="task-check-bg"></div>
-                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})">
-                        <span class="task-text">${escapeHtml(task.text)}</span>
-                        <span class="task-priority ${task.priority}">${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}</span>
-                        <button class="btn-delete" onclick="deleteTask(${task.id})">🗑️</button>
-                        <span class="task-swipe-hint">← Swipe</span>
-                    </div>
-                </div>
-            `).join('');
-
-            // Add swipe handlers
-            attachSwipeHandlers();
-        }
-
-        // SWIPE-TO-COMPLETE
-        let touchStartX = 0;
-        let touchEndX = 0;
-        let currentSwipeElement = null;
-
-        function attachSwipeHandlers() {
-            const taskItems = document.querySelectorAll('.task-item');
-            
-            taskItems.forEach(item => {
-                item.addEventListener('touchstart', handleSwipeStart, false);
-                item.addEventListener('touchmove', handleSwipeMove, false);
-                item.addEventListener('touchend', handleSwipeEnd, false);
-            });
-        }
-
-        function handleSwipeStart(e) {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
-            touchStartX = e.changedTouches[0].screenX;
-            currentSwipeElement = e.currentTarget;
-            currentSwipeElement.classList.add('swiping');
-        }
-
-        function handleSwipeMove(e) {
-            if (!currentSwipeElement) return;
-            touchEndX = e.changedTouches[0].screenX;
-            const diff = touchStartX - touchEndX;
-            
-            // Swipe left to complete (threshold: 50px)
-            if (diff > 50) {
-                currentSwipeElement.classList.add('swiping-complete');
-            } else {
-                currentSwipeElement.classList.remove('swiping-complete');
-            }
-        }
-
-        function handleSwipeEnd(e) {
-            if (!currentSwipeElement) return;
-            const diff = touchStartX - touchEndX;
-            
-            currentSwipeElement.classList.remove('swiping');
-            
-            // If swiped more than 100px, complete the task
-            if (diff > 100) {
-                const taskId = parseInt(currentSwipeElement.dataset.taskId);
-                toggleTask(taskId);
-            }
-            
-            currentSwipeElement.classList.remove('swiping-complete');
-            currentSwipeElement = null;
+            tasksList.innerHTML = sortedTasks.map(task => `<div class="task-item ${task.completed ? 'completed' : ''}"><input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})"><span class="task-text">${escapeHtml(task.text)}</span><span class="task-priority ${task.priority}">${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}</span><button class="btn-delete" onclick="deleteTask(${task.id})">🗑️</button></div>`).join('');
+            updateStats();
         }
 
         function addTask() {
             const text = taskInput.value.trim();
             const priority = taskPriority.value;
-            
-            if (!text) return;
+            if (!text) {
+                showError('⚠️ Please enter a task');
+                return;
+            }
             if (text.length > 200) {
-                alert('Task text is too long (max 200 characters)');
-                taskInput.value = text.substring(0, 200);
+                showError('⚠️ Task too long (max 200 characters)');
                 return;
             }
             if (tasks.length >= 100) {
-                alert('Maximum 100 tasks. Delete some to add more.');
+                showError('⚠️ Maximum 100 tasks');
                 return;
             }
-            if (!['low', 'medium', 'high'].includes(priority)) {
-                console.error('Invalid priority');
-                return;
-            }
-
-            tasks.push({
-                id: Date.now(),
-                text: text,
-                priority: priority,
-                completed: false,
-                created: new Date().toISOString()
-            });
-
+            tasks.push({ id: Date.now(), text: text, priority: priority, completed: false });
             taskInput.value = '';
             if (saveTasks()) {
                 renderTasks();
             } else {
-                alert('Failed to save task. Storage might be full.');
+                showError('❌ Failed to save task');
                 tasks.pop();
             }
         }
@@ -1220,19 +493,9 @@
 
         function saveTasks() {
             try {
-                const dataStr = JSON.stringify(tasks);
-                if (dataStr.length > 1000000) {
-                    console.warn('Task storage is large, consider cleaning up');
-                }
-                localStorage.setItem('proClockTasks', dataStr);
+                localStorage.setItem('proClockTasks', JSON.stringify(tasks));
                 return true;
-            } catch (error) {
-                if (error.name === 'QuotaExceededError') {
-                    console.error('Storage quota exceeded');
-                    alert('Storage full! Please delete some tasks.');
-                } else {
-                    console.error('Failed to save tasks:', error);
-                }
+            } catch (e) {
                 return false;
             }
         }
@@ -1243,7 +506,6 @@
             return div.innerHTML;
         }
 
-        // TAB NAVIGATION
         tabBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const tabName = btn.dataset.tab;
@@ -1254,86 +516,136 @@
             });
         });
 
-        // TASK INPUT
         btnAddTask.addEventListener('click', addTask);
         taskInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') addTask();
         });
 
-        // SERVICE WORKER REGISTRATION
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('data:application/javascript,' + encodeURIComponent(`
-                    const CACHE = 'proclock-v1';
-                    self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.add('/'))));
-                    self.addEventListener('activate', e => e.waitUntil(caches.keys().then(names => Promise.all(names.filter(n => n !== CACHE).map(n => caches.delete(n))))));
-                    self.addEventListener('fetch', e => {
-                        if (e.request.method === 'GET') {
-                            e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).then(r => {
-                                if (r.status === 200) caches.open(CACHE).then(c => c.put(e.request, r.clone()));
-                                return r;
-                            }).catch(() => caches.match('/'))));
-                        }
-                    });
-                `)).catch(() => {});
+        function initPremium() {
+            updatePremiumStatus();
+        }
+
+        function updatePremiumStatus() {
+            const features = ['pomodoro', 'notifications', 'analytics', 'cloud', 'themes', 'timezones'];
+            features.forEach(feature => {
+                const statusEl = document.getElementById(`status-${feature}`);
+                if (statusEl && premiumFeatures[feature]) {
+                    statusEl.textContent = '✓ Unlocked';
+                    statusEl.classList.add('unlocked');
+                    const btn = document.querySelector(`[onclick*="'${feature}'"]`);
+                    if (btn) {
+                        btn.textContent = '✓ Unlocked';
+                        btn.disabled = true;
+                    }
+                }
             });
         }
 
-        // PAGE VISIBILITY
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-                updateClock();
+        function handlePremium(feature, price) {
+            if (premiumFeatures[feature]) {
+                showError('✓ This feature is already unlocked!');
+                return;
             }
-        });
-
-        // ========== SETTINGS ==========
-        let showSeconds = true;
-        let use24HFormat = localStorage.getItem('proClockFormat24h') === 'true';
-
-        function toggleDarkMode() {
-            isDarkMode = !isDarkMode;
-            document.body.classList.toggle('light-mode');
-            document.getElementById('dark-mode-toggle').classList.toggle('active');
-            localStorage.setItem('proClockTheme', isDarkMode ? 'dark' : 'light');
+            const featureNames = {
+                'pomodoro': 'Pomodoro Timer',
+                'notifications': 'Smart Notifications',
+                'analytics': 'Analytics & Stats',
+                'cloud': 'Cloud Sync',
+                'themes': 'Custom Themes',
+                'timezones': 'Unlimited Timezones'
+            };
+            const featureName = featureNames[feature] || feature;
+            showPaymentModal(feature, featureName, price);
         }
 
-        function toggleSeconds() {
-            showSeconds = !showSeconds;
-            localStorage.setItem('proClockShowSeconds', showSeconds);
+        function showPaymentModal(feature, featureName, price) {
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+            modal.innerHTML = `<div style="background: #0f172a; border: 2px solid #00d9ff; border-radius: 1rem; padding: 2rem; max-width: 500px; color: #fff; font-family: system-ui;"><h2 style="margin-bottom: 1rem; color: #00d9ff;">Unlock ${featureName}</h2><p style="color: #94a3b8; margin-bottom: 2rem;">Price: <strong>€${price}</strong></p><div style="margin-bottom: 2rem; padding: 1rem; background: rgba(0,217,255,0.1); border-radius: 0.5rem;"><p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 0.5rem;">Have a discount code?</p><div style="display: flex; gap: 0.5rem;"><input type="text" id="discount-input" placeholder="Enter code..." style="flex: 1; padding: 0.75rem; border: 1px solid #334155; border-radius: 0.5rem; background: #1e293b; color: #fff;"><button onclick="validateDiscountCode('${feature}', '${featureName}', ${price})" style="padding: 0.75rem 1.5rem; background: #00d9ff; color: #000; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer;">Apply</button></div></div><div style="margin-bottom: 2rem;"><p style="color: #94a3b8; margin-bottom: 1rem; font-weight: 600;">💳 Pay with MetaMask (ETH/USDT):</p><button onclick="payWithMetaMask('${feature}', '${featureName}', ${price})" style="width: 100%; padding: 1rem; background: linear-gradient(135deg, #f6851b 0%, #f6851b 100%); color: #fff; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; font-size: 1rem;">🦊 Pay with MetaMask</button><p style="color: #94a3b8; font-size: 0.85rem; text-align: center; margin-top: 1rem;">Click to connect and pay from your wallet</p></div><button onclick="closePaymentModal()" style="width: 100%; padding: 0.75rem; background: #334155; color: #fff; border: none; border-radius: 0.5rem; cursor: pointer;">Close</button></div>`;
+            document.body.appendChild(modal);
         }
 
-        function toggle24HFormat() {
-            use24HFormat = !use24HFormat;
-            localStorage.setItem('proClockFormat24h', use24HFormat);
-            updateClock();
+        function validateDiscountCode(feature, featureName, price) {
+            const codeInput = document.getElementById('discount-input');
+            const code = codeInput.value.trim().toLowerCase();
+            if (!code) {
+                showError('⚠️ Please enter a discount code');
+                return;
+            }
+            if (discountCodes[code]) {
+                premiumFeatures[feature] = true;
+                localStorage.setItem('proClockPremium', JSON.stringify(premiumFeatures));
+                updatePremiumStatus();
+                closePaymentModal();
+                showError(`✓ Code "${code.toUpperCase()}" applied! ${featureName} unlocked!`);
+            } else {
+                showError('❌ Invalid discount code');
+                codeInput.style.borderColor = '#ef4444';
+                setTimeout(() => {
+                    codeInput.style.borderColor = '#334155';
+                }, 2000);
+            }
         }
+
+        function closePaymentModal() {
+            const modal = document.querySelector('[style*="position: fixed"][style*="background: rgba"]');
+            if (modal) modal.remove();
+        }
+
+        async function payWithMetaMask(feature, featureName, price) {
+            if (typeof window.ethereum === 'undefined') {
+                showError('❌ MetaMask not installed. Please install MetaMask extension first!');
+                return;
+            }
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const userAddress = accounts[0];
+                const priceInWei = Math.floor(price * 1e16).toString();
+                const txParams = {
+                    from: userAddressto: cryptoAddress,
+                    es['eth'],
+                    value: priceInWei,
+                    gas: '21000',
+                    gasPrice: '20000000000',
+                };
+                const txHash = await window.ethereum.request({
+                    method: 'eth_sendTransaction',
+                    params: [txParams],
+                });
+                closePaymentModal();
+                showError(`✓ Transaction sent! Hash: ${txHash.substring(0, 10)}...`);
+                showError(`📧 Email this hash to natsaerkki@gmail.com to unlock ${featureName}`);
+                setTimeout(() => {
+                    premiumFeatures[feature] = true;
+                    localStorage.setItem('proClockPremium', JSON.stringify(premiumFeatures));
+                    updatePremiumStatus();
+                    showError(`✓ ${featureName} unlocked!`);
+                }, 2000);
+            } catch (error) {
+                if (error.code === 4001) {
+                    showError('❌ Transaction rejected by user');
+                } else {
+                    showError('❌ Payment failed. Please try again.');
+                }
+            }
+        }
+
+        window.handlePremium = handlePremium;
+        window.validateDiscountCode = validateDiscountCode;
+        window.closePaymentModal = closePaymentModal;
+        window.payWithMetaMask = payWithMetaMask;
 
         function updateStats() {
             const total = tasks.length;
             const completed = tasks.filter(t => t.completed).length;
             const rate = total === 0 ? 0 : Math.round((completed / total) * 100);
-            
             document.getElementById('stat-total').textContent = total;
             document.getElementById('stat-completed').textContent = completed;
             document.getElementById('stat-rate').textContent = rate + '%';
-            
-            // Storage size
-            try {
-                const size = JSON.stringify(localStorage).length;
-                const kb = (size / 1024).toFixed(1);
-                document.getElementById('stat-storage').textContent = kb + ' KB';
-            } catch (e) {
-                document.getElementById('stat-storage').textContent = 'N/A';
-            }
         }
 
         function exportData() {
-            const data = {
-                tasks: tasks,
-                exported: new Date().toISOString(),
-                version: '1.0.0'
-            };
-            
+            const data = { tasks: tasks, exported: new Date().toISOString(), version: '1.0.0' };
             const dataStr = JSON.stringify(data, null, 2);
             const dataBlob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(dataBlob);
@@ -1342,8 +654,7 @@
             link.download = `proclock-backup-${new Date().toISOString().split('T')[0]}.json`;
             link.click();
             URL.revokeObjectURL(url);
-            
-            alert('✓ Data exported successfully!');
+            showError('✓ Data exported successfully!');
         }
 
         function clearAllData() {
@@ -1353,47 +664,36 @@
                     localStorage.clear();
                     isDarkMode = true;
                     isFocusMode = false;
-                    
                     document.body.classList.remove('light-mode');
                     document.body.classList.remove('focus-mode');
-                    
                     initTheme();
                     renderTasks();
                     updateStats();
-                    
-                    alert('✓ All data cleared. App reset to defaults.');
+                    showError('✓ All data cleared. App reset to defaults.');
                 }
             }
         }
 
-        function initSettings() {
-            // Load settings
-            showSeconds = localStorage.getItem('proClockShowSeconds') !== 'false';
-            use24HFormat = localStorage.getItem('proClockFormat24h') === 'true';
-            
-            // Update UI
-            document.getElementById('show-seconds').checked = showSeconds;
-            document.getElementById('24h-format').checked = use24HFormat;
-            
-            const darkModeToggle = document.getElementById('dark-mode-toggle');
-            if (isDarkMode) {
-                darkModeToggle.classList.add('active');
-            }
-            
-            updateStats();
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('light-mode');
+            document.getElementById('dark-mode-toggle').classList.toggle('active');
+            localStorage.setItem('proClockTheme', isDarkMode ? 'dark' : 'light');
         }
 
-        // INIT
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:application/javascript,' + encodeURIComponent(`const CACHE = 'proclock-v1'; self.addEventListener('install', e => e.waitUntil(caches.open(CACHE))); self.addEventListener('fetch', e => { if (e.request.method === 'GET') { e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))); } });`)).catch(() => {});
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
-            initSettings();
+            initPremium();
             updateClock();
             updateTimezones();
             fetchWeather();
             fetchIP();
             renderTasks();
             updateStats();
-
             setInterval(updateTimezones, 60000);
             setInterval(fetchWeather, 30 * 60000);
             setInterval(updateStats, 30000);
