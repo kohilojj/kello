@@ -1,273 +1,262 @@
 <!DOCTYPE html>
 <html lang="fi">
-<head> <meta name="google-site-verification" content="CLq9qwFy6AC0NVkiadZfn3zegMi2KUDntcm02hTWE5w" />
+<head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="Premium clock app with tasks, weather, and focus mode.">
     <meta name="theme-color" content="#00d9ff">
-    <title>ProClock Pro - Premium</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ProClock Pro">
+    <link rel="manifest" href="data:application/json,{%22name%22:%22ProClock%20Pro%22,%22short_name%22:%22ProClock%22,%22description%22:%22Premium%20Clock%20App%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%230f172a%22,%22theme_color%22:%22%2300d9ff%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20192%20192%27%3E%3Crect%20fill=%27%230f172a%27%20width=%27192%27%20height=%27192%27/%3E%3Ccircle%20cx=%2796%27%20cy=%2796%27%20r=%2780%27%20fill=%27none%27%20stroke=%27%2300d9ff%27%20stroke-width=%274%27/%3E%3Cline%20x1=%2796%27%20y1=%2740%27%20x2=%2796%27%20y2=%2760%27%20stroke=%27%2300d9ff%27%20stroke-width=%273%27/%3E%3C/svg%3E%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22any%20maskable%22}]}">
+    <title>ProClock Pro</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --accent: #00d9ff; --accent-dark: #0099cc; --bg: #0f172a; --bg-light: #1e293b; --border: #334155; --text-primary: #ffffff; --text-secondary: #94a3b8; --text-tertiary: #64748b; }
         html { scroll-behavior: smooth; }
         body { background: linear-gradient(135deg, #0f172a 0%, #1a1f35 100%); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; overflow-x: hidden; }
         body.focus-mode { background: linear-gradient(135deg, #0a0e1a 0%, #0f1829 100%); }
-        .wrapper { display: flex; min-height: 100vh; }
-        .sidebar { width: 300px; background: linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.8)); border-right: 1px solid var(--border); padding: 1.5rem; overflow-y: auto; position: fixed; height: 100vh; }
-        .sidebar-ad { margin-bottom: 1.5rem; }
-        .ad-label { color: var(--text-tertiary); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.75rem; font-weight: 700; }
-        .sidebar-ad iframe { width: 100% !important; max-width: 100% !important; }
-        .main-content { margin-left: 300px; flex: 1; }
-        .top-bar { backdrop-filter: blur(20px); background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid var(--border); padding: 1rem 2rem; position: sticky; top: 0; z-index: 100; }
-        .top-bar-content { max-width: 100%; display: flex; justify-content: space-between; align-items: center; }
-        .ip-display { font-family: 'Courier New', monospace; font-size: 0.875rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem; }
-        .status-dot { width: 0.5rem; height: 0.5rem; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+        .top-bar { backdrop-filter: blur(20px); background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid var(--border); padding: 1rem 1.5rem; position: sticky; top: 0; z-index: 100; }
+        .top-bar-content { display: flex; justify-content: space-between; align-items: center; }
+        .ip-display { font-family: 'Courier New', monospace; font-size: 0.75rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem; }
+        .status-dot { width: 0.4rem; height: 0.4rem; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .top-controls { display: flex; gap: 1rem; }
-        .btn-icon { background: var(--bg-light); border: 1px solid var(--border); color: var(--text-secondary); padding: 0.5rem 0.75rem; border-radius: 0.5rem; cursor: pointer; transition: all 0.3s ease; font-size: 1rem; }
-        .btn-icon:hover { background: var(--border); color: var(--accent); }
+        .top-controls { display: flex; gap: 0.75rem; }
+        .btn-icon { background: var(--bg-light); border: 1px solid var(--border); color: var(--text-secondary); padding: 0.5rem; border-radius: 0.5rem; cursor: pointer; transition: all 0.3s ease; font-size: 1.2rem; }
+        .btn-icon:active { background: var(--border); color: var(--accent); }
         .btn-icon.active { background: var(--accent); color: var(--bg); }
-        .container { max-width: 1000px; margin: 0 auto; padding: 3rem 2rem; }
-        .tab-nav { display: flex; gap: 2rem; margin-bottom: 3rem; border-bottom: 2px solid var(--border); padding-bottom: 1rem; }
-        .tab-btn { background: none; border: none; color: var(--text-secondary); font-size: 1rem; font-weight: 600; cursor: pointer; padding: 0.5rem 0; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem; position: relative; }
-        .tab-btn:hover { color: var(--text-primary); }
+        .container { max-width: 100%; padding: 2rem 1.5rem 6rem 1.5rem; }
+        .tab-nav { display: flex; gap: 1.5rem; margin-bottom: 2rem; border-bottom: 2px solid var(--border); padding-bottom: 0.75rem; overflow-x: auto; }
+        .tab-btn { background: none; border: none; color: var(--text-secondary); font-size: 0.95rem; font-weight: 600; cursor: pointer; padding: 0.5rem 0; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.4rem; position: relative; white-space: nowrap; }
+        .tab-btn:active { color: var(--text-primary); }
         .tab-btn.active { color: var(--accent); }
-        .tab-btn.active::after { content: ''; position: absolute; bottom: -1rem; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-dark)); border-radius: 3px; }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -0.75rem; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-dark)); border-radius: 3px; }
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .clock-section { text-align: center; margin-bottom: 5rem; }
-        .main-clock { font-size: clamp(5rem, 20vw, 11rem); font-weight: 100; letter-spacing: -3px; margin-bottom: 1rem; font-variant-numeric: tabular-nums; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: clockPulse 2s ease-in-out infinite; }
-        @keyframes clockPulse { 0%, 100% { opacity: 0.9; } 50% { opacity: 1; } }
-        .clock-seconds { color: var(--accent); font-size: clamp(2.5rem, 10vw, 5rem); font-weight: 300; }
-        .date-display { color: var(--text-secondary); font-size: 1rem; text-transform: uppercase; letter-spacing: 3px; margin-top: 2rem; font-weight: 500; }
-        .progress-section { margin: 4rem 0; }
-        .progress-label { display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 0.95rem; color: var(--text-secondary); font-weight: 600; }
-        .progress-bar { height: 8px; background: var(--bg-light); border-radius: 10px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent) 0%, var(--accent-dark) 100%); box-shadow: 0 0 20px rgba(0, 217, 255, 0.6); transition: width 1s linear; border-radius: 10px; }
-        .weather-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.5)); border: 2px solid var(--border); border-radius: 1.5rem; padding: 3rem; margin-bottom: 3rem; display: flex; gap: 3rem; align-items: center; backdrop-filter: blur(10px); transition: all 0.4s ease; }
-        .weather-card:hover { border-color: var(--accent); box-shadow: 0 8px 32px rgba(0, 217, 255, 0.2); transform: translateY(-4px); }
-        .weather-icon { font-size: 5rem; animation: weatherBounce 3s ease-in-out infinite; }
-        @keyframes weatherBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .weather-info h3 { font-size: 3rem; font-weight: 300; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .weather-info p { color: var(--text-secondary); font-size: 1rem; }
-        .timezones-section { margin-bottom: 3rem; }
-        .section-title { color: var(--accent); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 2rem; font-weight: 700; }
-        .timezones-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; }
-        .timezone-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.4)); border: 2px solid var(--border); border-radius: 1.2rem; padding: 2rem; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .timezone-card:hover { border-color: var(--accent); transform: translateY(-10px) scale(1.05); box-shadow: 0 16px 40px rgba(0, 217, 255, 0.25); }
-        .timezone-name { color: var(--text-tertiary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1.5rem; font-weight: 700; }
-        .timezone-time { font-size: 2.8rem; font-weight: 300; font-variant-numeric: tabular-nums; margin-bottom: 0.75rem; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .timezone-code { color: var(--accent); font-size: 0.8rem; font-weight: 700; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .clock-section { text-align: center; margin-bottom: 3rem; }
+        .main-clock { font-size: clamp(4rem, 16vw, 8rem); font-weight: 100; letter-spacing: -2px; margin-bottom: 0.75rem; font-variant-numeric: tabular-nums; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .clock-seconds { color: var(--accent); font-size: clamp(2rem, 8vw, 4rem); font-weight: 300; }
+        .date-display { color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-top: 1rem; }
+        .progress-section { margin: 2.5rem 0; }
+        .progress-label { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.8rem; color: var(--text-secondary); }
+        .progress-bar { height: 6px; background: var(--bg-light); border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent) 0%, var(--accent-dark) 100%); box-shadow: 0 0 15px rgba(0, 217, 255, 0.5); transition: width 1s linear; border-radius: 10px; }
+        .weather-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.4)); border: 2px solid var(--border); border-radius: 1rem; padding: 2rem; margin-bottom: 2rem; display: flex; gap: 2rem; align-items: center; transition: all 0.3s ease; }
+        .weather-card:active { border-color: var(--accent); box-shadow: 0 0 20px rgba(0, 217, 255, 0.2); }
+        .weather-icon { font-size: 3.5rem; }
+        .weather-info h3 { font-size: 2.2rem; font-weight: 300; margin-bottom: 0.3rem; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .weather-info p { color: var(--text-secondary); font-size: 0.8rem; }
+        .timezones-section { margin-bottom: 2rem; }
+        .section-title { color: var(--accent); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1.5rem; font-weight: 700; }
+        .timezones-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
+        .timezone-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.3)); border: 2px solid var(--border); border-radius: 1rem; padding: 1.5rem; transition: all 0.3s ease; }
+        .timezone-card:active { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0, 217, 255, 0.2); }
+        .timezone-name { color: var(--text-tertiary); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 600; }
+        .timezone-time { font-size: 2rem; font-weight: 300; font-variant-numeric: tabular-nums; margin-bottom: 0.4rem; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .timezone-code { color: var(--accent); font-size: 0.7rem; font-weight: 700; }
         .tasks-container { max-width: 100%; }
-        .task-input-group { display: flex; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
-        .task-input { flex: 1; min-width: 250px; background: linear-gradient(135deg, var(--bg-light), rgba(0, 217, 255, 0.03)); border: 2px solid var(--border); border-radius: 1rem; padding: 1.25rem; color: var(--text-primary); font-size: 1rem; transition: all 0.3s ease; font-weight: 500; }
-        .task-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 25px rgba(0, 217, 255, 0.3); background: linear-gradient(135deg, var(--bg-light), rgba(0, 217, 255, 0.08)); }
-        .task-input::placeholder { color: var(--text-tertiary); font-weight: 400; }
-        #task-priority { background: linear-gradient(135deg, var(--bg-light), rgba(0, 217, 255, 0.03)); border: 2px solid var(--border); color: var(--text-primary); padding: 1rem; border-radius: 1rem; cursor: pointer; transition: all 0.3s ease; font-weight: 600; font-size: 1rem; }
+        .task-input-group { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .task-input { flex: 1; min-width: 200px; background: var(--bg-light); border: 2px solid var(--border); border-radius: 0.8rem; padding: 0.9rem; color: var(--text-primary); font-size: 1rem; transition: all 0.3s ease; }
+        .task-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 217, 255, 0.2); }
+        .task-input::placeholder { color: var(--text-tertiary); }
+        #task-priority { background: var(--bg-light); border: 2px solid var(--border); color: var(--text-primary); padding: 0.9rem; border-radius: 0.8rem; cursor: pointer; transition: all 0.3s ease; font-weight: 600; font-size: 0.95rem; }
         #task-priority:focus { outline: none; border-color: var(--accent); }
         #task-priority option { background: var(--bg); color: var(--text-primary); }
-        .btn-add { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); color: #000; border: none; border-radius: 1rem; padding: 1.25rem 2.5rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.75rem; font-size: 1.05rem; box-shadow: 0 6px 20px rgba(0, 217, 255, 0.3); }
-        .btn-add:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0, 217, 255, 0.5); }
+        .btn-add { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); color: #000; border: none; border-radius: 0.8rem; padding: 0.9rem 2rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem; font-size: 1rem; box-shadow: 0 4px 12px rgba(0, 217, 255, 0.2); }
         .btn-add:active { transform: translateY(-2px); }
-        .tasks-list { display: flex; flex-direction: column; gap: 1.5rem; }
-        .task-item { background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.4)); border: 2px solid var(--border); border-radius: 1.2rem; padding: 1.75rem; display: flex; align-items: center; gap: 1.5rem; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; overflow: hidden; }
-        .task-item::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 0; background: linear-gradient(90deg, rgba(0, 217, 255, 0.15), transparent); transition: width 0.3s ease; }
-        .task-item:hover { border-color: var(--accent); transform: translateX(8px) translateY(-4px); box-shadow: 0 12px 32px rgba(0, 217, 255, 0.25); }
-        .task-item:hover::before { width: 100%; }
-        .task-item.completed { opacity: 0.6; border-color: rgba(110, 231, 183, 0.4); background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(15, 23, 42, 0.05)); }
-        .task-item.completed:hover { transform: translateX(0); }
-        .task-checkbox { width: 1.75rem; height: 1.75rem; cursor: pointer; accent-color: var(--accent); flex-shrink: 0; position: relative; z-index: 2; }
-        .task-content { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; position: relative; z-index: 1; }
-        .task-text { font-weight: 600; font-size: 1.05rem; word-break: break-word; transition: all 0.3s ease; }
-        .task-meta { font-size: 0.8rem; color: var(--text-tertiary); }
+        .tasks-list { display: flex; flex-direction: column; gap: 1rem; }
+        .task-item { background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.3)); border: 2px solid var(--border); border-radius: 1rem; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .task-item::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 0; background: linear-gradient(90deg, rgba(0, 217, 255, 0.1), transparent); transition: width 0.3s ease; }
+        .task-item:active { border-color: var(--accent); transform: translateX(4px); box-shadow: 0 6px 16px rgba(0, 217, 255, 0.2); }
+        .task-item:active::before { width: 100%; }
+        .task-item.completed { opacity: 0.6; border-color: rgba(110, 231, 183, 0.3); background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(15, 23, 42, 0.05)); }
+        .task-checkbox { width: 1.4rem; height: 1.4rem; cursor: pointer; accent-color: var(--accent); flex-shrink: 0; position: relative; z-index: 2; }
+        .task-content { flex: 1; display: flex; flex-direction: column; gap: 0.4rem; min-width: 0; position: relative; z-index: 1; }
+        .task-text { font-weight: 500; font-size: 1rem; word-break: break-word; transition: all 0.3s ease; }
+        .task-meta { font-size: 0.7rem; color: var(--text-tertiary); }
         .task-item.completed .task-text { text-decoration: line-through; color: var(--text-tertiary); opacity: 0.6; }
-        .task-priority { padding: 0.5rem 1rem; border-radius: 0.6rem; font-size: 0.8rem; font-weight: 700; margin-left: auto; flex-shrink: 0; position: relative; z-index: 2; }
-        .task-priority.high { background: rgba(239, 68, 68, 0.3); color: #ff8080; border: 1.5px solid rgba(239, 68, 68, 0.5); }
-        .task-priority.medium { background: rgba(251, 146, 60, 0.3); color: #ffb366; border: 1.5px solid rgba(251, 146, 60, 0.5); }
-        .task-priority.low { background: rgba(34, 197, 94, 0.3); color: #80ff99; border: 1.5px solid rgba(34, 197, 94, 0.5); }
-        .btn-delete { background: none; border: none; color: var(--text-tertiary); cursor: pointer; padding: 0.75rem; transition: all 0.3s ease; font-size: 1.75rem; flex-shrink: 0; position: relative; z-index: 2; font-weight: 300; }
-        .btn-delete:hover { color: #ff6b6b; transform: scale(1.4); }
-        .empty-state { text-align: center; padding: 5rem 2rem; color: var(--text-tertiary); }
-        .empty-state-icon { font-size: 4rem; margin-bottom: 1.5rem; opacity: 0.4; animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-        .empty-state p { font-size: 1.1rem; font-weight: 500; }
+        .task-priority { padding: 0.4rem 0.7rem; border-radius: 0.5rem; font-size: 0.7rem; font-weight: 700; margin-left: auto; flex-shrink: 0; position: relative; z-index: 2; }
+        .task-priority.high { background: rgba(239, 68, 68, 0.25); color: #ff8080; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .task-priority.medium { background: rgba(251, 146, 60, 0.25); color: #ffb366; border: 1px solid rgba(251, 146, 60, 0.4); }
+        .task-priority.low { background: rgba(34, 197, 94, 0.25); color: #80ff99; border: 1px solid rgba(34, 197, 94, 0.4); }
+        .btn-delete { background: none; border: none; color: var(--text-tertiary); cursor: pointer; padding: 0.5rem; transition: all 0.3s ease; font-size: 1.4rem; flex-shrink: 0; position: relative; z-index: 2; font-weight: 300; }
+        .btn-delete:active { color: #ff6b6b; transform: scale(1.2); }
+        .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-tertiary); }
+        .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+        .empty-state p { font-size: 1rem; }
         .settings-container { max-width: 100%; }
-        .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; }
-        .settings-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.4)); border: 2px solid var(--border); border-radius: 1.2rem; padding: 2.5rem; transition: all 0.4s ease; }
-        .settings-card:hover { border-color: var(--accent); transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0, 217, 255, 0.2); }
-        .settings-header { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--border); }
-        .settings-header h3 { font-size: 1.3rem; font-weight: 700; color: var(--accent); margin: 0; }
-        .settings-option { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; border-bottom: 1px solid rgba(51, 65, 85, 0.2); }
+        .settings-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+        .settings-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.3)); border: 2px solid var(--border); border-radius: 1rem; padding: 2rem; transition: all 0.3s ease; }
+        .settings-card:active { border-color: var(--accent); box-shadow: 0 8px 20px rgba(0, 217, 255, 0.2); }
+        .settings-header { margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border); }
+        .settings-header h3 { font-size: 1.15rem; font-weight: 700; color: var(--accent); margin: 0; }
+        .settings-option { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid rgba(51, 65, 85, 0.2); }
         .settings-option:last-child { border-bottom: none; }
-        .settings-checkbox { width: 1.75rem; height: 1.75rem; cursor: pointer; accent-color: var(--accent); }
-        .settings-btn { width: 100%; padding: 1.25rem; margin-bottom: 1rem; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); color: #000; border: none; border-radius: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-size: 1rem; box-shadow: 0 6px 20px rgba(0, 217, 255, 0.3); }
-        .settings-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0, 217, 255, 0.5); }
-        .settings-btn.danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #fff; box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3); }
-        .settings-info { font-size: 1rem; line-height: 2.2; color: var(--text-secondary); }
+        .settings-checkbox { width: 1.4rem; height: 1.4rem; cursor: pointer; accent-color: var(--accent); }
+        .settings-btn { width: 100%; padding: 1rem; margin-bottom: 0.75rem; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); color: #000; border: none; border-radius: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-size: 1rem; box-shadow: 0 4px 12px rgba(0, 217, 255, 0.2); }
+        .settings-btn:active { transform: translateY(-1px); }
+        .settings-btn.danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #fff; }
+        .settings-info { font-size: 0.95rem; line-height: 1.8; color: var(--text-secondary); }
+        .settings-info p { margin: 0.5rem 0; }
         .settings-info strong { color: var(--accent); }
         .settings-info a { color: var(--accent); text-decoration: none; font-weight: 600; }
-        .error-message { display: none; margin-top: 1.5rem; padding: 1.5rem; background: rgba(239, 68, 68, 0.15); border: 2px solid #ef4444; border-radius: 1rem; color: #ff8080; font-size: 1rem; font-weight: 600; animation: slideDown 0.4s ease-out; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .error-message { display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.15); border: 2px solid #ef4444; border-radius: 0.8rem; color: #ff8080; font-size: 0.9rem; font-weight: 600; animation: slideDown 0.3s ease-out; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
         body.light-mode { --accent: #0099cc; --accent-dark: #0077aa; --bg: #f8fafc; --bg-light: #f1f5f9; --border: #e2e8f0; --text-primary: #0f172a; --text-secondary: #475569; --text-tertiary: #94a3b8; }
-        body.focus-mode .tab-nav, body.focus-mode .timezones-section, body.focus-mode .weather-card, body.focus-mode .sidebar { display: none; }
-        body.focus-mode .main-content { margin-left: 0; }
-        body.focus-mode .clock-section { margin-bottom: 10rem; }
-        body.focus-mode .main-clock { font-size: clamp(7rem, 25vw, 15rem); }
-        .footer { text-align: center; padding: 3rem 2rem; background: linear-gradient(180deg, transparent 0%, rgba(0, 217, 255, 0.05) 100%); border-top: 2px solid var(--border); margin-top: 5rem; }
-        .footer h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.75rem; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .footer p { color: var(--text-secondary); font-size: 1rem; margin-bottom: 0.5rem; }
-        .footer-meta { color: var(--text-tertiary); font-size: 0.9rem; }
-        .footer-meta a { color: var(--accent); text-decoration: none; }
-        @media (max-width: 1024px) { .sidebar { width: 250px; } .main-content { margin-left: 250px; } }
-        @media (max-width: 768px) { .wrapper { flex-direction: column; } .sidebar { width: 100%; height: auto; position: relative; border-right: none; border-bottom: 1px solid var(--border); } .main-content { margin-left: 0; } .container { padding: 2rem 1rem; } .weather-card { flex-direction: column; gap: 1.5rem; padding: 2rem; } .timezones-grid { grid-template-columns: 1fr; } .task-input-group { flex-direction: column; } .task-input, #task-priority { min-width: auto; } .main-clock { font-size: clamp(3.5rem, 14vw, 7rem); } .clock-section { margin-bottom: 3rem; } }
+        body.focus-mode .tab-nav, body.focus-mode .timezones-section, body.focus-mode .weather-card { display: none; }
+        body.focus-mode .clock-section { margin-bottom: 6rem; }
+        body.focus-mode .main-clock { font-size: clamp(5rem, 20vw, 10rem); }
+        /* AD SECTION - BOTTOM ONLY */
+        .ad-footer { background: linear-gradient(180deg, transparent 0%, rgba(0, 217, 255, 0.05) 100%); border-top: 2px solid var(--border); padding: 2rem 1.5rem; margin-top: 4rem; }
+        .ad-container { max-width: 100%; margin: 0 auto; }
+        .ad-label { color: var(--text-tertiary); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem; font-weight: 700; text-align: center; }
+        .ad-content { display: flex; justify-content: center; align-items: center; }
+        .ad-content iframe { max-width: 100% !important; width: 100% !important; }
+        .footer-text { text-align: center; color: var(--text-tertiary); font-size: 0.8rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+        .footer-text p { margin: 0.3rem 0; }
+        .footer-text a { color: var(--accent); text-decoration: none; font-weight: 600; }
+        @media (max-width: 480px) { .container { padding: 1.5rem 1rem 5rem 1rem; } .main-clock { font-size: clamp(3.5rem, 14vw, 6rem); } }
     </style>
 </head>
 <body>
-    <div class="wrapper">
-        <!-- SIDEBAR WITH ADS -->
-        <div class="sidebar">
-            <div class="sidebar-ad">
-                <div class="ad-label">📢 Sponsored</div>
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <div class="ip-display">
+                <span class="status-dot"></span>
+                <span id="ip-text">---.---.---.---</span>
+            </div>
+            <div class="top-controls">
+                <button class="btn-icon" id="theme-btn">🌙</button>
+                <button class="btn-icon" id="focus-btn" title="Focus Mode">🧠</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tab-nav">
+            <button class="tab-btn active" data-tab="clock">⏰ Clock</button>
+            <button class="tab-btn" data-tab="tasks">✓ Tasks</button>
+            <button class="tab-btn" data-tab="settings">⚙️ Settings</button>
+        </div>
+
+        <!-- CLOCK TAB -->
+        <div id="clock" class="tab-content active">
+            <div class="clock-section">
+                <div class="main-clock">
+                    <span id="clock-hours">00</span>:<span id="clock-minutes">00</span><span class="clock-seconds">:<span id="clock-seconds">00</span></span>
+                </div>
+                <div class="date-display" id="date-display">Loading...</div>
+            </div>
+            <div class="progress-section">
+                <div class="progress-label">
+                    <span>📊 Day Progress</span>
+                    <span id="progress-percent">0.0000%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+            <div class="weather-card">
+                <div class="weather-icon" id="weather-icon">☁️</div>
+                <div class="weather-info">
+                    <h3 id="weather-temp">--°C</h3>
+                    <p id="weather-desc">Loading weather...</p>
+                </div>
+            </div>
+            <div class="timezones-section">
+                <div class="section-title">🌍 Time Zones</div>
+                <div class="timezones-grid" id="timezones-grid"></div>
+            </div>
+        </div>
+
+        <!-- TASKS TAB -->
+        <div id="tasks" class="tab-content">
+            <div class="tasks-container">
+                <div class="section-title">✓ Tasks <span id="task-count" style="color: var(--accent);">(0/0)</span></div>
+                <div class="task-input-group">
+                    <input type="text" class="task-input" id="task-input" placeholder="What needs to be done?">
+                    <select id="task-priority">
+                        <option value="low">🟢 Low</option>
+                        <option value="medium" selected>🟡 Med</option>
+                        <option value="high">🔴 High</option>
+                    </select>
+                    <button class="btn-add" id="btn-add-task">+ Add</button>
+                </div>
+                <div id="error-message" class="error-message"></div>
+                <div class="tasks-list" id="tasks-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <p>No tasks yet. Add one to get started!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETTINGS TAB -->
+        <div id="settings" class="tab-content">
+            <div class="settings-container">
+                <div class="section-title">⚙️ Settings</div>
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <div class="settings-header">
+                            <h3>🎨 Appearance</h3>
+                        </div>
+                        <div class="settings-option">
+                            <div>
+                                <p style="font-weight: 600; margin: 0;">Dark Mode</p>
+                                <p style="color: var(--text-tertiary); font-size: 0.8rem; margin: 0.3rem 0 0 0;">Better for eyes at night</p>
+                            </div>
+                            <input type="checkbox" class="settings-checkbox" id="dark-mode-toggle" onchange="toggleDarkMode()">
+                        </div>
+                    </div>
+                    <div class="settings-card">
+                        <div class="settings-header">
+                            <h3>📊 Statistics</h3>
+                        </div>
+                        <div class="settings-info">
+                            <p>Total Tasks: <strong id="stat-total">0</strong></p>
+                            <p>Completed: <strong id="stat-completed" style="color: #70ee8e;">0</strong></p>
+                            <p>Completion Rate: <strong id="stat-rate" style="color: var(--accent);">0%</strong></p>
+                        </div>
+                    </div>
+                    <div class="settings-card">
+                        <div class="settings-header">
+                            <h3>💾 Data</h3>
+                        </div>
+                        <button class="settings-btn" onclick="exportData()">📥 Export</button>
+                        <button class="settings-btn danger" onclick="clearAllData()">🗑️ Clear All</button>
+                    </div>
+                    <div class="settings-card">
+                        <div class="settings-header">
+                            <h3>ℹ️ About</h3>
+                        </div>
+                        <div class="settings-info">
+                            <p><strong>ProClock Pro</strong></p>
+                            <p style="color: var(--text-secondary);">v1.0.0</p>
+                            <p style="color: var(--text-tertiary); margin-top: 1rem; font-size: 0.9rem;">Fast, beautiful, offline-first productivity app.</p>
+                            <p style="color: var(--text-tertiary); margin-top: 0.75rem; font-size: 0.9rem;">📧 <a href="mailto:natsaerkki@gmail.com">Support</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADS SECTION - BOTTOM ONLY -->
+    <div class="ad-footer">
+        <div class="ad-container">
+            <div class="ad-label">📢 Sponsored Content</div>
+            <div class="ad-content">
                 <!-- BEGIN AADS AD UNIT 2428368 -->
-                <div id="frame" style="width: 100%; margin: auto; position: relative;">
+                <div id="frame" style="width: 100%; max-width: 728px; margin: 0 auto; position: relative;">
                     <iframe data-aa='2428368' src='//acceptable.a-ads.com/2428368/?size=Adaptive' style='border:0; padding:0; width:100%; height:auto; overflow:hidden; display:block; margin:auto'></iframe>
                 </div>
                 <!-- END AADS AD UNIT 2428368 -->
             </div>
-        </div>
-
-        <!-- MAIN CONTENT -->
-        <div class="main-content">
-            <div class="top-bar">
-                <div class="top-bar-content">
-                    <div class="ip-display">
-                        <span class="status-dot"></span>
-                        <span id="ip-text">Loading...</span>
-                    </div>
-                    <div class="top-controls">
-                        <button class="btn-icon" id="theme-btn">🌙</button>
-                        <button class="btn-icon" id="focus-btn" title="Focus Mode">🧠</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="container">
-                <div class="tab-nav">
-                    <button class="tab-btn active" data-tab="clock">⏰ Clock</button>
-                    <button class="tab-btn" data-tab="tasks">✓ Tasks</button>
-                    <button class="tab-btn" data-tab="settings">⚙️ Settings</button>
-                </div>
-
-                <!-- CLOCK TAB -->
-                <div id="clock" class="tab-content active">
-                    <div class="clock-section">
-                        <div class="main-clock">
-                            <span id="clock-hours">00</span>:<span id="clock-minutes">00</span><span class="clock-seconds">:<span id="clock-seconds">00</span></span>
-                        </div>
-                        <div class="date-display" id="date-display">Loading...</div>
-                    </div>
-                    <div class="progress-section">
-                        <div class="progress-label">
-                            <span>📊 Today's Progress</span>
-                            <span id="progress-percent">0.0000%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="progress-fill"></div>
-                        </div>
-                    </div>
-                    <div class="weather-card">
-                        <div class="weather-icon" id="weather-icon">☁️</div>
-                        <div class="weather-info">
-                            <h3 id="weather-temp">--°C</h3>
-                            <p id="weather-desc">Loading weather...</p>
-                        </div>
-                    </div>
-                    <div class="timezones-section">
-                        <div class="section-title">🌍 Global Time Zones</div>
-                        <div class="timezones-grid" id="timezones-grid"></div>
-                    </div>
-                </div>
-
-                <!-- TASKS TAB -->
-                <div id="tasks" class="tab-content">
-                    <div class="tasks-container">
-                        <div class="section-title">✓ My Tasks <span id="task-count" style="color: var(--accent);">(0/0)</span></div>
-                        <div class="task-input-group">
-                            <input type="text" class="task-input" id="task-input" placeholder="What needs to be done?">
-                            <select id="task-priority">
-                                <option value="low">🟢 Low</option>
-                                <option value="medium" selected>🟡 Medium</option>
-                                <option value="high">🔴 High</option>
-                            </select>
-                            <button class="btn-add" id="btn-add-task">+ Add</button>
-                        </div>
-                        <div id="error-message" class="error-message"></div>
-                        <div class="tasks-list" id="tasks-list">
-                            <div class="empty-state">
-                                <div class="empty-state-icon">📝</div>
-                                <p>No tasks yet. Add one to get started!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SETTINGS TAB -->
-                <div id="settings" class="tab-content">
-                    <div class="settings-container">
-                        <div class="section-title">⚙️ Settings</div>
-                        <div class="settings-grid">
-                            <div class="settings-card">
-                                <div class="settings-header">
-                                    <h3>🎨 Appearance</h3>
-                                </div>
-                                <div class="settings-option">
-                                    <div>
-                                        <p style="font-weight: 600; margin: 0; font-size: 1.05rem;">Dark Mode</p>
-                                        <p style="color: var(--text-tertiary); font-size: 0.85rem; margin: 0.5rem 0 0 0;">Better for eyes</p>
-                                    </div>
-                                    <input type="checkbox" class="settings-checkbox" id="dark-mode-toggle" onchange="toggleDarkMode()">
-                                </div>
-                            </div>
-                            <div class="settings-card">
-                                <div class="settings-header">
-                                    <h3>📊 Statistics</h3>
-                                </div>
-                                <div class="settings-info">
-                                    <p>Total Tasks: <strong id="stat-total">0</strong></p>
-                                    <p>Completed: <strong id="stat-completed" style="color: #70ee8e;">0</strong></p>
-                                    <p>Completion Rate: <strong id="stat-rate" style="color: var(--accent);">0%</strong></p>
-                                </div>
-                            </div>
-                            <div class="settings-card">
-                                <div class="settings-header">
-                                    <h3>💾 Data</h3>
-                                </div>
-                                <button class="settings-btn" onclick="exportData()">📥 Export</button>
-                                <button class="settings-btn danger" onclick="clearAllData()">🗑️ Clear All</button>
-                            </div>
-                            <div class="settings-card">
-                                <div class="settings-header">
-                                    <h3>ℹ️ About</h3>
-                                </div>
-                                <div class="settings-info">
-                                    <p><strong>ProClock Pro</strong></p>
-                                    <p style="color: var(--text-secondary); margin-top: 0.5rem;">v1.0.0 Premium</p>
-                                    <p style="color: var(--text-tertiary); margin-top: 1.5rem; font-size: 0.95rem;">Fast, beautiful, offline-first productivity app.</p>
-                                    <p style="color: var(--text-tertiary); margin-top: 1rem; font-size: 0.95rem;">📧 <a href="mailto:natsaerkki@gmail.com">Support</a></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="footer">
-                <h3>✨ ProClock Pro</h3>
-                <p>Premium Productivity & Time Management</p>
-                <div class="footer-meta">
-                    © 2024 ProClock Pro | <a href="mailto:natsaerkki@gmail.com">Contact</a>
-                </div>
+            <div class="footer-text">
+                <p>© 2024 ProClock Pro</p>
+                <p><a href="mailto:natsaerkki@gmail.com">Contact Developer</a></p>
             </div>
         </div>
     </div>
@@ -283,7 +272,6 @@
             { name: 'New York', offset: -5, code: 'EST' },
         ];
 
-        // DOM
         const clockHours = document.getElementById('clock-hours');
         const clockMinutes = document.getElementById('clock-minutes');
         const clockSeconds = document.getElementById('clock-seconds');
@@ -389,7 +377,7 @@
         function showError(msg) {
             errorMessage.textContent = msg;
             errorMessage.style.display = 'block';
-            setTimeout(() => { errorMessage.style.display = 'none'; }, 4000);
+            setTimeout(() => { errorMessage.style.display = 'none'; }, 3500);
         }
 
         function renderTasks() {
@@ -415,7 +403,7 @@
                         <span class="task-text">${escapeHtml(task.text)}</span>
                         <span class="task-meta">Added ${new Date(task.created).toLocaleDateString()}</span>
                     </div>
-                    <span class="task-priority ${task.priority}">${task.priority === 'high' ? '🔴 High' : task.priority === 'medium' ? '🟡 Medium' : '🟢 Low'}</span>
+                    <span class="task-priority ${task.priority}">${task.priority === 'high' ? '🔴' : task.priority === 'medium' ? '🟡' : '🟢'}</span>
                     <button class="btn-delete" onclick="deleteTask(${task.id})">×</button>
                 </div>
             `).join('');
@@ -533,6 +521,10 @@
             localStorage.setItem('proClockTheme', isDarkMode ? 'dark' : 'light');
         }
 
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:application/javascript,' + encodeURIComponent(`const CACHE = 'proclock-v1'; self.addEventListener('install', e => e.waitUntil(caches.open(CACHE))); self.addEventListener('fetch', e => { if (e.request.method === 'GET') { e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))); } });`)).catch(() => {});
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
             updateClock();
@@ -543,7 +535,6 @@
             updateStats();
             setInterval(updateTimezones, 60000);
             setInterval(fetchWeather, 30 * 60000);
-            setInterval(updateStats, 30000);
         });
     </script>
 </body>
