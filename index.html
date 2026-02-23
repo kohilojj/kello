@@ -83,8 +83,9 @@
         #task-priority { background: var(--bg-light); border: 2px solid var(--border); color: var(--text-primary); padding: 0.9rem; border-radius: 0.8rem; cursor: pointer; transition: all 0.3s ease; font-weight: 600; font-size: 0.95rem; }
         #task-priority:focus { outline: none; border-color: var(--accent); }
         #task-priority option { background: var(--bg); color: var(--text-primary); }
-        .btn-add { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); color: #000; border: none; border-radius: 0.8rem; padding: 0.9rem 2rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem; font-size: 1rem; box-shadow: 0 4px 12px rgba(0, 217, 255, 0.2); }
-        .btn-add:active { transform: translateY(-2px); }
+        .btn-add { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); color: #000; border: none; border-radius: 0.8rem; padding: 0.9rem 2rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem; font-size: 1rem; box-shadow: 0 4px 12px rgba(0, 217, 255, 0.2); touch-action: manipulation; }
+        .btn-add:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0, 217, 255, 0.3); }
+        .btn-add:active { transform: translateY(-1px); }
         .tasks-list { display: flex; flex-direction: column; gap: 1rem; }
         .task-item { background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.3)); border: 2px solid var(--border); border-radius: 1rem; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; transition: all 0.3s ease; position: relative; overflow: hidden; }
         .task-item::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 0; background: linear-gradient(90deg, rgba(0, 217, 255, 0.1), transparent); transition: width 0.3s ease; }
@@ -250,6 +251,49 @@
                     </div>
                     <div class="settings-card">
                         <div class="settings-header">
+                            <h3>🔔 Notifications</h3>
+                        </div>
+                        <div class="settings-option">
+                            <div>
+                                <p style="font-weight: 600; margin: 0;">Task Reminders</p>
+                                <p style="color: var(--text-tertiary); font-size: 0.8rem; margin: 0.3rem 0 0 0;">Get notified about tasks</p>
+                            </div>
+                            <input type="checkbox" class="settings-checkbox" id="notifications-toggle" onchange="toggleNotifications()">
+                        </div>
+                    </div>
+                    <div class="settings-card">
+                        <div class="settings-header">
+                            <h3>💾 Autosave</h3>
+                        </div>
+                        <div class="settings-option">
+                            <div>
+                                <p style="font-weight: 600; margin: 0;">Auto Save</p>
+                                <p style="color: var(--text-tertiary); font-size: 0.8rem; margin: 0.3rem 0 0 0;">Save changes automatically</p>
+                            </div>
+                            <input type="checkbox" class="settings-checkbox" id="autosave-toggle" onchange="toggleAutosave()" checked>
+                        </div>
+                    </div>
+                    <div class="settings-card">
+                        <div class="settings-header">
+                            <h3>⏲️ Clock Settings</h3>
+                        </div>
+                        <div class="settings-option">
+                            <div>
+                                <p style="font-weight: 600; margin: 0;">Show Seconds</p>
+                                <p style="color: var(--text-tertiary); font-size: 0.8rem; margin: 0.3rem 0 0 0;">Display seconds in clock</p>
+                            </div>
+                            <input type="checkbox" class="settings-checkbox" id="seconds-toggle" onchange="toggleSeconds()" checked>
+                        </div>
+                        <div class="settings-option">
+                            <div>
+                                <p style="font-weight: 600; margin: 0;">12-Hour Format</p>
+                                <p style="color: var(--text-tertiary); font-size: 0.8rem; margin: 0.3rem 0 0 0;">Use 12-hour instead of 24</p>
+                            </div>
+                            <input type="checkbox" class="settings-checkbox" id="12hour-toggle" onchange="toggle12Hour()">
+                        </div>
+                    </div>
+                    <div class="settings-card">
+                        <div class="settings-header">
                             <h3>ℹ️ About</h3>
                         </div>
                         <div class="settings-info">
@@ -323,13 +367,13 @@
             
             <div style="text-align: center; color: var(--text-tertiary); font-size: 0.8rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
                 <p style="margin: 0.5rem 0;">© 2024 ProClock Pro - Premium Productivity App</p>
-                <p style="margin: 0.5rem 0;">📧 <a href="mailto:natsaerkki@gmail.com" style="color: var(--accent); text-decoration: none; font-weight: 600;">Contact Developer</a></p>
+                <p style="margin: 0.5rem 0;">📧 <a href="/cdn-cgi/l/email-protection#442a2530372521362f2f2d042329252d286a272b29" style="color: var(--accent); text-decoration: none; font-weight: 600;">Contact Developer</a></p>
                 <p style="margin: 1rem 0 0 0; font-size: 0.75rem;">Version 1.0.0 | Free & Open Source</p>
             </div>
         </div>
     </div>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         let isDarkMode = localStorage.getItem('proClockTheme') === 'dark';
         let isFocusMode = localStorage.getItem('proClockFocus') === 'true';
         let tasks = JSON.parse(localStorage.getItem('proClockTasks')) || [];
@@ -541,8 +585,16 @@
             });
         });
 
-        btnAddTask.addEventListener('click', addTask);
-        taskInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addTask(); });
+        btnAddTask.addEventListener('click', (e) => {
+            e.preventDefault();
+            addTask();
+        });
+        taskInput.addEventListener('keypress', (e) => { 
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addTask();
+            }
+        });
 
         function updateStats() {
             const total = tasks.length;
@@ -589,13 +641,33 @@
             localStorage.setItem('proClockTheme', isDarkMode ? 'dark' : 'light');
         }
 
+        function toggleNotifications() {
+            const notif = document.getElementById('notifications-toggle').checked;
+            localStorage.setItem('proClockNotifications', notif);
+            showError(notif ? '✓ Notifications enabled' : '✓ Notifications disabled');
+        }
+
+        function toggleAutosave() {
+            const autosave = document.getElementById('autosave-toggle').checked;
+            localStorage.setItem('proClockAutosave', autosave);
+            showError(autosave ? '✓ Autosave enabled' : '✓ Autosave disabled');
+        }
+
+        function toggleSeconds() {
+            const seconds = document.getElementById('seconds-toggle').checked;
+            localStorage.setItem('proClockSeconds', seconds);
+            showError(seconds ? '✓ Seconds shown' : '✓ Seconds hidden');
+        }
+
+        function toggle12Hour() {
+            const hour12 = document.getElementById('12hour-toggle').checked;
+            localStorage.setItem('proClockFormat12h', hour12);
+            showError(hour12 ? '✓ 12-hour format' : '✓ 24-hour format');
+            updateClock();
+        }
+
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('data:application/javascript,' + encodeURIComponent(`const CACHE = 'proclock-v1'; self.addEventListener('install', e => e.waitUntil(caches.open(CACHE))); self.addEventListener('fetch', e => { if (e.request.method === 'GET') { e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))); } });`)).catch(() => {});
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initTheme();
-            updateClock();
-            updateTimezones();
-            fetchWeather();
-            fetchIP();
+        document.addEventListener('DOMContentL
