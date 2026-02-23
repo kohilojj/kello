@@ -255,24 +255,11 @@
                         <div class="settings-info">
                             <p><strong>ProClock Pro v1.0.0</strong></p>
                             <p style="color: var(--text-secondary);">Premium Productivity App</p>
-                            <p style="color: var(--text-tertiary); margin-top: 1rem; font-size: 0.9rem;">📧 <a href="mailto:natsaerkki@gmail.com">Support</a></p>
+                            <p style="color: var(--text-tertiary); margin-top: 1rem; font-size: 0.9rem;">📧 <a href="/cdn-cgi/l/email-protection#d0beb1a4a3b1b5a2bbbbb990b7bdb1b9bcfeb3bfbd">Support</a></p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- ===== AD SECTION 1 - TOP ===== -->
-    <div class="ad-section">
-        <div class="ad-label">📢 Featured Advertisement 1</div>
-        <div class="ad-content">
-            <!-- BEGIN AADS AD UNIT 2428368 -->
-            <div id="frame1" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
-                <iframe data-aa='2428368' src='//acceptable.a-ads.com/2428368/?size=Adaptive'
-                    style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
-            </div>
-            <!-- END AADS AD UNIT 2428368 -->
         </div>
     </div>
 
@@ -313,19 +300,6 @@
         </div>
     </div>
 
-    <!-- ===== AD SECTION 2 - MIDDLE ===== -->
-    <div class="ad-section">
-        <div class="ad-label">💡 Featured Advertisement 2</div>
-        <div class="ad-content">
-            <!-- BEGIN AADS AD UNIT 2428368 -->
-            <div id="frame2" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
-                <iframe data-aa='2428368' src='//acceptable.a-ads.com/2428368/?size=Adaptive'
-                    style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
-            </div>
-            <!-- END AADS AD UNIT 2428368 -->
-        </div>
-    </div>
-
     <!-- ===== INFO SECTION ===== -->
     <div style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.3)); border: 2px solid var(--border); border-radius: 1rem; padding: 2rem 1.5rem; margin: 3rem 1.5rem; max-width: calc(100% - 3rem);">
         <h2 style="color: var(--accent); font-size: 1.2rem; margin-bottom: 1rem;">🚀 Get Started Today</h2>
@@ -333,25 +307,29 @@
         <p style="color: var(--text-secondary); font-size: 0.9rem;">Download for iOS, Android, or use on any modern web browser. Your data stays on your device.</p>
     </div>
 
-    <!-- ===== AD SECTION 3 - BOTTOM ===== -->
-    <div class="ad-section">
-        <div class="ad-label">🎁 Featured Advertisement 3</div>
-        <div class="ad-content">
+    <!-- ===== FINAL GET STARTED SECTION WITH AD ===== -->
+    <div style="background: linear-gradient(180deg, transparent 0%, rgba(0, 217, 255, 0.05) 100%); border-top: 2px solid var(--border); padding: 2rem 1.5rem; margin-top: 4rem;">
+        <div style="max-width: 100%; margin: 0 auto;">
+            <h2 style="color: var(--accent); font-size: 1.3rem; margin-bottom: 1.5rem; text-align: center;">🚀 Get Started Today</h2>
+            <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 1.5rem; text-align: center; font-size: 1rem;">ProClock Pro is completely free and works offline. No account needed, no data collection, no ads in the app itself.</p>
+            <p style="color: var(--text-secondary); text-align: center; margin-bottom: 2rem;">Download for iOS, Android, or use on any modern web browser. Your data stays on your device.</p>
+            
             <!-- BEGIN AADS AD UNIT 2428368 -->
-            <div id="frame3" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
+            <div id="frame" style="width: 100%;margin: auto;position: relative; z-index: 99998; margin-bottom: 2rem;">
                 <iframe data-aa='2428368' src='//acceptable.a-ads.com/2428368/?size=Adaptive'
                     style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
             </div>
             <!-- END AADS AD UNIT 2428368 -->
-        </div>
-        <div class="footer-text">
-            <p>© 2024 ProClock Pro - Premium Productivity App</p>
-            <p>📧 <a href="mailto:natsaerkki@gmail.com">Contact Developer</a></p>
-            <p style="margin-top: 1rem; font-size: 0.75rem;">Version 1.0.0 | Free & Open Source</p>
+            
+            <div style="text-align: center; color: var(--text-tertiary); font-size: 0.8rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                <p style="margin: 0.5rem 0;">© 2024 ProClock Pro - Premium Productivity App</p>
+                <p style="margin: 0.5rem 0;">📧 <a href="mailto:natsaerkki@gmail.com" style="color: var(--accent); text-decoration: none; font-weight: 600;">Contact Developer</a></p>
+                <p style="margin: 1rem 0 0 0; font-size: 0.75rem;">Version 1.0.0 | Free & Open Source</p>
+            </div>
         </div>
     </div>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         let isDarkMode = localStorage.getItem('proClockTheme') === 'dark';
         let isFocusMode = localStorage.getItem('proClockFocus') === 'true';
         let tasks = JSON.parse(localStorage.getItem('proClockTasks')) || [];
@@ -621,11 +599,3 @@
             updateTimezones();
             fetchWeather();
             fetchIP();
-            renderTasks();
-            updateStats();
-            setInterval(updateTimezones, 60000);
-            setInterval(fetchWeather, 30 * 60000);
-        });
-    </script>
-</body>
-</html>
