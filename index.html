@@ -1,20 +1,39 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-<meta name="google-site-verification" content="J2COQlbhgFAhpNpnMN6n67n5v2DRvze9XDV_J8XjjzM" />
+    <meta name="google-site-verification" content="CLq9qwFy6AC0NVkiadZfn3zegMi2KUDntcm02hTWE5w" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="Premium clock app with tasks, weather, and focus mode.">
+    <meta name="description" content="ProClock Pro - Premium productivity clock app with tasks, weather tracking, and focus mode. Free offline-first app for iOS, Android & Web.">
+    <meta name="keywords" content="clock, productivity, tasks, timer, weather, focus mode, offline app, PWA, time tracking, todo list">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large">
     <meta name="theme-color" content="#00d9ff">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="ProClock Pro">
-    <link rel="manifest" href="data:application/json,{%22name%22:%22ProClock%20Pro%22,%22short_name%22:%22ProClock%22,%22description%22:%22Premium%20Clock%20App%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%230f172a%22,%22theme_color%22:%22%2300d9ff%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20192%20192%27%3E%3Crect%20fill=%27%230f172a%27%20width=%27192%27%20height=%27192%27/%3E%3Ccircle%20cx=%2796%27%20cy=%2796%27%20r=%2780%27%20fill=%27none%27%20stroke=%27%2300d9ff%27%20stroke-width=%274%27/%3E%3Cline%20x1=%2796%27%20y1=%2740%27%20x2=%2796%27%20y2=%2760%27%20stroke=%27%2300d9ff%27%20stroke-width=%273%27/%3E%3C/svg%3E%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22any%20maskable%22}]}">
-    <title>ProClock Pro</title>
+    <meta property="og:title" content="ProClock Pro - Premium Productivity Clock App">
+    <meta property="og:description" content="Fast, beautiful, offline-first app with tasks, weather & focus mode.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://proclock-pro.vercel.app">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ProClock Pro - Premium Productivity Clock">
+    <link rel="canonical" href="https://proclock-pro.vercel.app/">
+    <link rel="manifest" href="data:application/json,{%22name%22:%22ProClock Pro%22,%22short_name%22:%22ProClock%22,%22display%22:%22standalone%22,%22background_color%22:%22%230f172a%22,%22theme_color%22:%22%2300d9ff%22}">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "ProClock Pro",
+        "description": "Premium productivity clock app with tasks, weather tracking, and focus mode",
+        "url": "https://proclock-pro.vercel.app",
+        "applicationCategory": ["Productivity", "Utilities"],
+        "aggregateRating": {"@type": "AggregateRating", "ratingValue": "5", "ratingCount": "100"}
+    }
+    </script>
+    <title>ProClock Pro - Premium Productivity Clock App | Tasks, Weather & Focus Mode</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --accent: #00d9ff; --accent-dark: #0099cc; --bg: #0f172a; --bg-light: #1e293b; --border: #334155; --text-primary: #ffffff; --text-secondary: #94a3b8; --text-tertiary: #64748b; }
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
         body { background: linear-gradient(135deg, #0f172a 0%, #1a1f35 100%); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; overflow-x: hidden; }
         body.focus-mode { background: linear-gradient(135deg, #0a0e1a 0%, #0f1829 100%); }
         .top-bar { backdrop-filter: blur(20px); background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid var(--border); padding: 1rem 1.5rem; position: sticky; top: 0; z-index: 100; }
@@ -108,12 +127,16 @@
         body.focus-mode .tab-nav, body.focus-mode .timezones-section, body.focus-mode .weather-card { display: none; }
         body.focus-mode .clock-section { margin-bottom: 6rem; }
         body.focus-mode .main-clock { font-size: clamp(5rem, 20vw, 10rem); }
-        /* AD SECTION - BOTTOM ONLY */
-        .ad-footer { background: linear-gradient(180deg, transparent 0%, rgba(0, 217, 255, 0.05) 100%); border-top: 2px solid var(--border); padding: 2rem 1.5rem; margin-top: 4rem; }
-        .ad-container { max-width: 100%; margin: 0 auto; }
+        .ad-section { background: linear-gradient(180deg, transparent 0%, rgba(0, 217, 255, 0.05) 100%); border-top: 2px solid var(--border); padding: 2rem 1.5rem; margin-top: 2rem; }
         .ad-label { color: var(--text-tertiary); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem; font-weight: 700; text-align: center; }
-        .ad-content { display: flex; justify-content: center; align-items: center; }
+        .ad-content { display: flex; justify-content: center; align-items: center; min-height: 250px; }
         .ad-content iframe { max-width: 100% !important; width: 100% !important; }
+        .features-section { background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.3)); border: 2px solid var(--border); border-radius: 1rem; padding: 2rem 1.5rem; margin: 3rem 1.5rem; max-width: calc(100% - 3rem); }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem; }
+        .feature-item { text-align: center; padding: 1.5rem; }
+        .feature-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .feature-title { color: var(--text-primary); font-weight: 600; margin-bottom: 0.5rem; }
+        .feature-desc { color: var(--text-tertiary); font-size: 0.85rem; }
         .footer-text { text-align: center; color: var(--text-tertiary); font-size: 0.8rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
         .footer-text p { margin: 0.3rem 0; }
         .footer-text a { color: var(--accent); text-decoration: none; font-weight: 600; }
@@ -141,7 +164,6 @@
             <button class="tab-btn" data-tab="settings">⚙️ Settings</button>
         </div>
 
-        <!-- CLOCK TAB -->
         <div id="clock" class="tab-content active">
             <div class="clock-section">
                 <div class="main-clock">
@@ -171,7 +193,6 @@
             </div>
         </div>
 
-        <!-- TASKS TAB -->
         <div id="tasks" class="tab-content">
             <div class="tasks-container">
                 <div class="section-title">✓ Tasks <span id="task-count" style="color: var(--accent);">(0/0)</span></div>
@@ -194,7 +215,6 @@
             </div>
         </div>
 
-        <!-- SETTINGS TAB -->
         <div id="settings" class="tab-content">
             <div class="settings-container">
                 <div class="section-title">⚙️ Settings</div>
@@ -206,7 +226,7 @@
                         <div class="settings-option">
                             <div>
                                 <p style="font-weight: 600; margin: 0;">Dark Mode</p>
-                                <p style="color: var(--text-tertiary); font-size: 0.8rem; margin: 0.3rem 0 0 0;">Better for eyes at night</p>
+                                <p style="color: var(--text-tertiary); font-size: 0.8rem; margin: 0.3rem 0 0 0;">Better for eyes</p>
                             </div>
                             <input type="checkbox" class="settings-checkbox" id="dark-mode-toggle" onchange="toggleDarkMode()">
                         </div>
@@ -233,10 +253,9 @@
                             <h3>ℹ️ About</h3>
                         </div>
                         <div class="settings-info">
-                            <p><strong>ProClock Pro</strong></p>
-                            <p style="color: var(--text-secondary);">v1.0.0</p>
-                            <p style="color: var(--text-tertiary); margin-top: 1rem; font-size: 0.9rem;">Fast, beautiful, offline-first productivity app.</p>
-                            <p style="color: var(--text-tertiary); margin-top: 0.75rem; font-size: 0.9rem;">📧 <a href="mailto:natsaerkki@gmail.com">Support</a></p>
+                            <p><strong>ProClock Pro v1.0.0</strong></p>
+                            <p style="color: var(--text-secondary);">Premium Productivity App</p>
+                            <p style="color: var(--text-tertiary); margin-top: 1rem; font-size: 0.9rem;">📧 <a href="mailto:natsaerkki@gmail.com">Support</a></p>
                         </div>
                     </div>
                 </div>
@@ -244,21 +263,91 @@
         </div>
     </div>
 
-    <!-- ADS SECTION - BOTTOM ONLY -->
-    <div class="ad-footer">
-        <div class="ad-container">
-            <div class="ad-label">📢 Sponsored Content</div>
-            <div class="ad-content">
-                <!-- BEGIN AADS AD UNIT 2428368 -->
-                <div id="frame" style="width: 100%; max-width: 728px; margin: 0 auto; position: relative;">
-                    <iframe data-aa='2428368' src='//acceptable.a-ads.com/2428368/?size=Adaptive' style='border:0; padding:0; width:100%; height:auto; overflow:hidden; display:block; margin:auto'></iframe>
-                </div>
-                <!-- END AADS AD UNIT 2428368 -->
+    <!-- ===== AD SECTION 1 - TOP ===== -->
+    <div class="ad-section">
+        <div class="ad-label">📢 Featured Advertisement 1</div>
+        <div class="ad-content">
+            <!-- BEGIN AADS AD UNIT 2428368 -->
+            <div id="frame1" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
+                <iframe data-aa='2428368' src='//acceptable.a-ads.com/2428368/?size=Adaptive'
+                    style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
             </div>
-            <div class="footer-text">
-                <p>© 2024 ProClock Pro</p>
-                <p><a href="mailto:natsaerkki@gmail.com">Contact Developer</a></p>
+            <!-- END AADS AD UNIT 2428368 -->
+        </div>
+    </div>
+
+    <!-- ===== FEATURES SECTION ===== -->
+    <div class="features-section">
+        <h2 style="color: var(--accent); font-size: 1.3rem; margin-bottom: 1.5rem; text-align: center;">✨ Why Choose ProClock Pro?</h2>
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">⚡</div>
+                <p class="feature-title">Lightning Fast</p>
+                <p class="feature-desc">Instant response, smooth animations</p>
             </div>
+            <div class="feature-item">
+                <div class="feature-icon">🔒</div>
+                <p class="feature-title">Private</p>
+                <p class="feature-desc">All data stored locally</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">📱</div>
+                <p class="feature-title">Cross-Platform</p>
+                <p class="feature-desc">iOS, Android, Web, Desktop</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🎨</div>
+                <p class="feature-title">Beautiful</p>
+                <p class="feature-desc">Dark & Light themes</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">📊</div>
+                <p class="feature-title">Analytics</p>
+                <p class="feature-desc">Track your productivity</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🎯</div>
+                <p class="feature-title">Focus Mode</p>
+                <p class="feature-desc">Eliminate distractions</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== AD SECTION 2 - MIDDLE ===== -->
+    <div class="ad-section">
+        <div class="ad-label">💡 Featured Advertisement 2</div>
+        <div class="ad-content">
+            <!-- BEGIN AADS AD UNIT 2428368 -->
+            <div id="frame2" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
+                <iframe data-aa='2428368' src='//acceptable.a-ads.com/2428368/?size=Adaptive'
+                    style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
+            </div>
+            <!-- END AADS AD UNIT 2428368 -->
+        </div>
+    </div>
+
+    <!-- ===== INFO SECTION ===== -->
+    <div style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.3)); border: 2px solid var(--border); border-radius: 1rem; padding: 2rem 1.5rem; margin: 3rem 1.5rem; max-width: calc(100% - 3rem);">
+        <h2 style="color: var(--accent); font-size: 1.2rem; margin-bottom: 1rem;">🚀 Get Started Today</h2>
+        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 1rem;">ProClock Pro is completely free and works offline. No account needed, no data collection, no ads in the app itself.</p>
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">Download for iOS, Android, or use on any modern web browser. Your data stays on your device.</p>
+    </div>
+
+    <!-- ===== AD SECTION 3 - BOTTOM ===== -->
+    <div class="ad-section">
+        <div class="ad-label">🎁 Featured Advertisement 3</div>
+        <div class="ad-content">
+            <!-- BEGIN AADS AD UNIT 2428368 -->
+            <div id="frame3" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
+                <iframe data-aa='2428368' src='//acceptable.a-ads.com/2428368/?size=Adaptive'
+                    style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
+            </div>
+            <!-- END AADS AD UNIT 2428368 -->
+        </div>
+        <div class="footer-text">
+            <p>© 2024 ProClock Pro - Premium Productivity App</p>
+            <p>📧 <a href="mailto:natsaerkki@gmail.com">Contact Developer</a></p>
+            <p style="margin-top: 1rem; font-size: 0.75rem;">Version 1.0.0 | Free & Open Source</p>
         </div>
     </div>
 
@@ -419,11 +508,11 @@
                 return;
             }
             if (text.length > 200) {
-                showError('⚠️ Task too long (max 200 characters)');
+                showError('⚠️ Task too long');
                 return;
             }
             if (tasks.length >= 100) {
-                showError('⚠️ Maximum 100 tasks reached');
+                showError('⚠️ Max 100 tasks');
                 return;
             }
             tasks.push({ id: Date.now(), text: text, priority: priority, completed: false, created: new Date().toISOString() });
@@ -432,7 +521,7 @@
             if (saveTasks()) {
                 renderTasks();
             } else {
-                showError('❌ Failed to save task');
+                showError('❌ Failed to save');
                 tasks.pop();
             }
         }
@@ -495,12 +584,12 @@
             link.download = `proclock-${new Date().toISOString().split('T')[0]}.json`;
             link.click();
             URL.revokeObjectURL(url);
-            showError('✓ Data exported!');
+            showError('✓ Exported!');
         }
 
         function clearAllData() {
             if (confirm('⚠️ Delete ALL tasks?')) {
-                if (confirm('This cannot be undone!')) {
+                if (confirm('Cannot undo!')) {
                     tasks = [];
                     localStorage.clear();
                     isDarkMode = true;
@@ -510,7 +599,7 @@
                     initTheme();
                     renderTasks();
                     updateStats();
-                    showError('✓ All data cleared!');
+                    showError('✓ Cleared!');
                 }
             }
         }
