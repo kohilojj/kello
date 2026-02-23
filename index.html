@@ -86,7 +86,7 @@
         .section-title { color: var(--blue); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1.5rem; font-weight: 700; }
         
         .timezone-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
-        .timezone-item { background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.3)); border: 2px solid var(--border); border-radius: 1rem; padding: 1.5rem; text-align: center; transition: all 0.3s; }
+        .timezone-item { background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.3)); border: 2px solid var(--border); border-radius: 1rem; padding: 1.5rem; text-align: center; transition: all 0.3s; cursor: pointer; user-select: none; }
         .timezone-item:hover { border-color: var(--blue); transform: translateY(-4px); }
         .tz-name { color: var(--text-dark); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.75rem; font-weight: 600; }
         .tz-time { font-size: 1.8rem; font-weight: 300; font-variant-numeric: tabular-nums; color: var(--blue); margin-bottom: 0.3rem; }
@@ -329,7 +329,7 @@
                     <div class="stats-text">
                         <p><strong>ProClock Pro v1.0.0</strong></p>
                         <p style="color: var(--text-gray); margin-top: 0.5rem;">Premium Productivity</p>
-                        <p style="color: var(--text-dark); margin-top: 1rem;">📧 <a href="mailto:natsaerkki@gmail.com">Support</a></p>
+                        <p style="color: var(--text-dark); margin-top: 1rem;">📧 <a href="/cdn-cgi/l/email-protection#3957584d4a585c4b525250795e54585055175a5654">Support</a></p>
                     </div>
                 </div>
             </div>
@@ -353,7 +353,7 @@
 
         <div class="footer-text">
             <p>© 2024 ProClock Pro</p>
-            <p>📧 <a href="mailto:natsaerkki@gmail.com">Contact</a></p>
+            <p>📧 <a href="/cdn-cgi/l/email-protection#8ee0effafdefebfce5e5e7cee9e3efe7e2a0ede1e3">Contact</a></p>
             <p style="margin-top: 1rem; font-size: 0.75rem;">v1.0.0 | Free & Open</p>
         </div>
     </div>
@@ -362,7 +362,7 @@
     <div class="toast" id="toast"></div>
 
     <!-- JAVASCRIPT -->
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // ===== CONFIG & STATE =====
         let state = {
             darkMode: localStorage.getItem('dark') === '1',
@@ -417,6 +417,8 @@
         }
 
         // ===== TIMEZONES =====
+        let selectedTZ = localStorage.getItem('selectedTZ') || 'Helsinki';
+        
         function updateTZ() {
             const now = new Date();
             const html = TZ.map(tz => {
@@ -424,9 +426,32 @@
                 const local = new Date(utc + (tz.offset * 3600000));
                 const h = String(local.getHours()).padStart(2, '0');
                 const m = String(local.getMinutes()).padStart(2, '0');
-                return `<div class="timezone-item"><div class="tz-name">${tz.name}</div><div class="tz-time">${h}:${m}</div><div class="tz-code">${tz.code}</div></div>`;
+                const active = selectedTZ === tz.name ? 'style="border-color: var(--blue); background: rgba(0, 217, 255, 0.1);"' : '';
+                return `<div class="timezone-item" ${active} onclick="selectTZ('${tz.name}')"><div class="tz-name">${tz.name}</div><div class="tz-time">${h}:${m}</div><div class="tz-code">${tz.code}</div></div>`;
             }).join('');
             document.getElementById('timezones').innerHTML = html;
+            
+            // Update main clock if timezone selected
+            const selected = TZ.find(t => t.name === selectedTZ);
+            if (selected && selectedTZ !== 'Helsinki') {
+                const now = new Date();
+                const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+                const local = new Date(utc + (selected.offset * 3600000));
+                const h = String(local.getHours()).padStart(2, '0');
+                const m = String(local.getMinutes()).padStart(2, '0');
+                const s = String(local.getSeconds()).padStart(2, '0');
+                
+                document.getElementById('h').textContent = h;
+                document.getElementById('m').textContent = m;
+                document.getElementById('s').textContent = s;
+            }
+        }
+        
+        function selectTZ(name) {
+            selectedTZ = name;
+            localStorage.setItem('selectedTZ', name);
+            updateTZ();
+            toast(`Switched to ${name}`, 'success');
         }
 
         // ===== WEATHER =====
@@ -688,11 +713,3 @@
                 self.addEventListener('install', e => e.waitUntil(caches.open('pv1')));
                 self.addEventListener('fetch', e => {
                     if (e.request.method === 'GET') {
-                        e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
-                    }
-                });
-            `)).catch(e => {});
-        }
-    </script>
-</body>
-</html>
