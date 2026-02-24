@@ -3,12 +3,11 @@
 <head>
     <meta name="google-site-verification" content="CLq9qwFy6AC0NVkiadZfn3zegMi2KUDntcm02hTWE5w" />
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="ProClock Pro - Advanced Clock & Task Manager">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="ProClock Pro - Clock & Task Manager">
     <meta name="theme-color" content="#00d9ff">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="manifest" href="data:application/json,{%22name%22:%22ProClock Pro%22,%22display%22:%22standalone%22,%22theme_color%22:%22%2300d9ff%22}">
-    <title>ProClock Pro - Advanced Clock App</title>
+    <title>ProClock Pro</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -16,7 +15,7 @@
             background: linear-gradient(135deg, #0f172a 0%, #1a1f35 100%);
             color: white;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            min-height: 100vh;
+            overflow-x: hidden;
         }
         
         body.light { background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%); color: #333; }
@@ -32,7 +31,6 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
         .header-left { 
@@ -92,7 +90,7 @@
         @keyframes slideDown { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         .clock { text-align: center; margin: 3rem 0; }
-        .time { font-size: clamp(3rem, 15vw, 6rem); font-weight: 100; letter-spacing: -3px; color: #00d9ff; font-variant-numeric: tabular-nums; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(0, 217, 255, 0.3); }
+        .time { font-size: clamp(3rem, 15vw, 6rem); font-weight: 100; letter-spacing: -2px; color: #00d9ff; font-variant-numeric: tabular-nums; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(0, 217, 255, 0.3); }
         .date { color: rgba(255, 255, 255, 0.7); font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; }
         
         .progress { margin: 2.5rem 0; }
@@ -194,7 +192,7 @@
         .task-text { font-weight: 500; word-break: break-word; font-size: 1.05rem; }
         .task-date { font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); margin-top: 0.25rem; }
         
-        .task-priority { padding: 0.4rem 0.8rem; border-radius: 0.4rem; font-size: 0.75rem; font-weight: 700; }
+        .task-priority { padding: 0.4rem 0.8rem; border-radius: 0.4rem; font-size: 0.75rem; font-weight: 700; margin-left: auto; flex-shrink: 0; }
         .pri-high { background: rgba(239, 68, 68, 0.3); color: #ff8080; }
         .pri-medium { background: rgba(251, 146, 60, 0.3); color: #ffb366; }
         .pri-low { background: rgba(34, 197, 94, 0.3); color: #80ff99; }
@@ -259,19 +257,6 @@
         
         @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
         
-        .ad-section { 
-            background: rgba(0, 217, 255, 0.05); 
-            border-top: 1px solid rgba(255, 255, 255, 0.1); 
-            padding: 3rem 1rem; 
-            margin-top: 4rem; 
-            text-align: center;
-        }
-        .ad-content { display: flex; justify-content: center; margin: 2rem 0; }
-        .ad-content iframe { max-width: 100% !important; width: 100% !important; }
-        
-        .footer { color: rgba(255, 255, 255, 0.5); font-size: 0.85rem; text-align: center; padding: 1.5rem 0; border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: 1.5rem; }
-        .footer a { color: #00d9ff; text-decoration: none; font-weight: 600; }
-        
         .online-badge {
             display: inline-flex;
             align-items: center;
@@ -305,14 +290,13 @@
     <div class="header">
         <div class="header-left">
             <div class="status"></div>
-            <span id="ip">Loading...</span>
             <div class="online-badge" id="badge">
                 <span>●</span>
                 <span id="badgeText">Online</span>
             </div>
+            <span id="ip-info">IP: Loading...</span>
         </div>
         <div class="header-right">
-            <button class="btn" id="installBtn" style="display:none;" title="Install App">📥</button>
             <button class="btn" id="themeBtn">🌙</button>
             <button class="btn" id="focusBtn">🧠</button>
         </div>
@@ -330,32 +314,40 @@
                 <div class="time"><span id="h">00</span>:<span id="m">00</span>:<span id="s">00</span></div>
                 <div class="date" id="date">Loading...</div>
             </div>
+
             <div class="progress">
                 <div class="progress-label"><span>📊 Progress</span><span id="prog">0%</span></div>
                 <div class="progress-bar"><div class="progress-fill" id="progBar"></div></div>
             </div>
+
             <div id="weatherDiv" class="card">
                 <div class="weather">
                     <div class="weather-icon" id="wIcon">☁️</div>
-                    <div><div class="weather-temp" id="wTemp">--°C</div><div class="weather-desc" id="wDesc">Loading weather...</div></div>
+                    <div>
+                        <div class="weather-temp" id="wTemp">--°C</div>
+                        <div class="weather-desc" id="wDesc">Loading weather...</div>
+                    </div>
                 </div>
             </div>
-            <h3 style="color: #00d9ff; margin: 2.5rem 0 1.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700;">🌍 Click to change timezone:</h3>
+
+            <h3 style="color: #00d9ff; margin: 2rem 0 1rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px;">🌍 Click timezone:</h3>
             <div class="timezone-grid" id="tzGrid"></div>
         </div>
 
         <div id="tasks" class="tab">
-            <h3 style="color: #00d9ff; margin-bottom: 1.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700;">✓ Tasks <span id="taskCount" style="color: #00d9ff;">(0)</span></h3>
+            <h3 style="color: #00d9ff; margin-bottom: 1rem; font-size: 0.9rem; text-transform: uppercase;">✓ Tasks <span id="taskCount">(0)</span></h3>
+
             <div class="task-form">
-                <input type="text" id="taskInput" class="input" placeholder="Add a new task..." autocomplete="off">
+                <input type="text" id="taskInput" class="input" placeholder="Add task..." autocomplete="off">
                 <select id="taskPri" class="select">
                     <option value="low">🟢 Low</option>
                     <option value="medium" selected>🟡 Medium</option>
                     <option value="high">🔴 High</option>
                 </select>
-                <button class="btn-primary" onclick="addTask()">+ Add Task</button>
+                <button class="btn-primary" onclick="addTask()">+ Add</button>
             </div>
-            <div class="tasks" id="taskList"><div class="empty"><div class="empty-icon">📝</div><p>No tasks yet. Add one to get started!</p></div></div>
+
+            <div class="tasks" id="taskList"><div class="empty"><div class="empty-icon">📝</div><p>No tasks</p></div></div>
         </div>
 
         <div id="settings" class="tab">
@@ -365,13 +357,13 @@
                     <div class="setting-item">
                         <div>
                             <div class="setting-name">Dark Mode</div>
-                            <div class="setting-desc">Switch to light theme</div>
+                            <div class="setting-desc">Switch theme</div>
                         </div>
                         <div class="toggle" id="darkToggle" onclick="toggleDark()"></div>
                     </div>
                 </div>
                 <div class="setting">
-                    <h3>⏲️ Clock Settings</h3>
+                    <h3>⏲️ Clock</h3>
                     <div class="setting-item">
                         <div>
                             <div class="setting-name">Show Seconds</div>
@@ -421,27 +413,11 @@
                     <h3>ℹ️ About</h3>
                     <div class="stats">
                         <p><strong>ProClock Pro v2.0.0</strong></p>
-                        <p style="margin-top: 0.75rem;">Advanced Productivity Clock</p>
-                        <p style="margin-top: 0.75rem;">📧 <a href="mailto:natsaerkki@gmail.com">Support</a></p>
-                        <p style="margin-top: 0.75rem; font-size: 0.85rem; color: rgba(255, 255, 255, 0.5);">Online First | Offline Capable</p>
+                        <p style="margin-top: 0.75rem;">Advanced Productivity App</p>
+                        <p style="margin-top: 0.75rem;">📧 <a href="mailto:natsaerkki@gmail.com" style="color: #00d9ff;">Support</a></p>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="ad-section">
-        <h2 style="color: #00d9ff; font-size: 1.3rem; margin-bottom: 1rem;">🚀 Get Started Today</h2>
-        <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 1.5rem;">Free, fast, and works online. Your personal productivity assistant.</p>
-        <div class="ad-content">
-            <div id="frame" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
-                <iframe data-aa='2428368' src='//acceptable.a-ads.com/2428368/?size=Adaptive'
-                    style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
-            </div>
-        </div>
-        <div class="footer">
-            <p>© 2024 ProClock Pro - Advanced Clock & Task Manager</p>
-            <p style="margin-top: 0.75rem;"><a href="mailto:natsaerkki@gmail.com">📧 Contact Developer</a></p>
         </div>
     </div>
 
@@ -464,22 +440,24 @@
             { name: 'Sydney', off: 11 },
             { name: 'Dubai', off: 4 },
             { name: 'Singapore', off: 8 },
-            { name: 'Hong Kong', off: 8 }
+            { name: 'Hong Kong', off: 8 },
+            { name: 'Paris', off: 1 },
+            { name: 'Berlin', off: 1 }
         ];
 
-        // ONLINE STATUS
+        // ONLINE/OFFLINE HANDLING
         window.addEventListener('online', () => {
             isOnline = true;
             updateOnlineStatus();
             updateWeather();
             updateIP();
-            showToast('🌐 Back online! Updating data...', 'success');
+            showToast('🌐 Back online! Updating...', 'success');
         });
 
         window.addEventListener('offline', () => {
             isOnline = false;
             updateOnlineStatus();
-            showToast('📴 Going offline - local mode only', 'error');
+            showToast('📴 Offline - local only', 'error');
         });
 
         function updateOnlineStatus() {
@@ -544,28 +522,23 @@
             document.getElementById('tzGrid').innerHTML = html;
         }
 
-        function changeTZ(name) {
+        window.changeTZ = (name) => {
             selectedTZ = name;
             localStorage.setItem('tz', name);
             updateTZ();
             updateTime();
             showToast(`📍 Switched to ${name}`, 'success');
-        }
+        };
 
         async function updateWeather() {
             if (!isOnline) {
                 document.getElementById('wTemp').textContent = '--°C';
-                document.getElementById('wDesc').textContent = 'Offline - no weather data';
+                document.getElementById('wDesc').textContent = 'Offline - no weather';
                 return;
             }
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000);
-                
-                const res = await fetch('https://wttr.in/?format=j1', { signal: controller.signal });
-                clearTimeout(timeoutId);
-                
-                if (!res.ok) throw new Error('Weather API error');
+                const res = await fetch('https://wttr.in/?format=j1');
+                if (!res.ok) throw new Error('Error');
                 const data = await res.json();
                 const c = data.current_condition[0];
                 const t = Math.round(c.temp_C);
@@ -579,37 +552,45 @@
                 else document.getElementById('wIcon').textContent = '❄️';
             } catch (e) {
                 document.getElementById('wTemp').textContent = '--°C';
-                document.getElementById('wDesc').textContent = 'Cannot load weather';
+                document.getElementById('wDesc').textContent = 'Cannot load';
             }
         }
 
         async function updateIP() {
             if (!isOnline) {
-                document.getElementById('ip').textContent = 'Offline Mode';
+                document.getElementById('ip-info').textContent = 'IP: Offline';
                 return;
             }
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000);
-                
-                const res = await fetch('https://ipapi.co/json/', { signal: controller.signal });
-                clearTimeout(timeoutId);
-                
-                if (!res.ok) throw new Error('IP API error');
-                const data = await res.json();
-                document.getElementById('ip').textContent = data.ip || 'No IP';
+                const services = ['https://api.ipify.org?format=json', 'https://ipapi.co/json/'];
+                for (let service of services) {
+                    try {
+                        const res = await fetch(service);
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.ip) {
+                                document.getElementById('ip-info').textContent = 'IP: ' + data.ip;
+                                return;
+                            } else if (data.query) {
+                                document.getElementById('ip-info').textContent = 'IP: ' + data.query;
+                                return;
+                            }
+                        }
+                    } catch (e) { continue; }
+                }
+                document.getElementById('ip-info').textContent = 'IP: Unable';
             } catch (e) {
-                document.getElementById('ip').textContent = 'IP unavailable';
+                document.getElementById('ip-info').textContent = 'IP: Error';
             }
         }
 
-        function addTask() {
+        window.addTask = () => {
             const text = document.getElementById('taskInput').value.trim();
             const pri = document.getElementById('taskPri').value;
             
-            if (!text) { showToast('❌ Enter a task'); return; }
-            if (text.length > 200) { showToast('❌ Task too long'); return; }
-            if (tasks.length >= 100) { showToast('❌ Max 100 tasks'); return; }
+            if (!text) { showToast('❌ Enter task'); return; }
+            if (text.length > 200) { showToast('❌ Too long'); return; }
+            if (tasks.length >= 100) { showToast('❌ Max 100'); return; }
             
             tasks.push({
                 id: Date.now(),
@@ -622,8 +603,8 @@
             document.getElementById('taskInput').value = '';
             renderTasks();
             save();
-            showToast('✅ Task added!', 'success');
-        }
+            showToast('✅ Added!', 'success');
+        };
 
         window.toggleTask = (id) => {
             const t = tasks.find(x => x.id == id);
@@ -644,7 +625,7 @@
             document.getElementById('taskCount').textContent = `(${active}/${tasks.length})`;
             
             if (!tasks.length) {
-                list.innerHTML = '<div class="empty"><div class="empty-icon">📝</div><p>No tasks yet. Add one to get started!</p></div>';
+                list.innerHTML = '<div class="empty"><div class="empty-icon">📝</div><p>No tasks</p></div>';
                 return;
             }
             
@@ -683,7 +664,7 @@
             localStorage.setItem('dark', darkMode ? '1' : '0');
             applyTheme();
             document.getElementById('darkToggle').classList.toggle('on');
-            showToast(darkMode ? '🌞 Light mode' : '🌙 Dark mode', 'success');
+            showToast(darkMode ? '🌞 Light' : '🌙 Dark', 'success');
         }
 
         function toggleSec() {
@@ -717,24 +698,24 @@
             document.getElementById('darkToggle').classList.toggle('on', darkMode);
         }
 
-        function exportData() {
-            const data = { tasks: tasks, date: new Date().toISOString(), version: '2.0.0' };
+        window.exportData = () => {
+            const data = { tasks: tasks, date: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
             a.download = `proclock-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
-            showToast('📥 Data exported!', 'success');
-        }
+            showToast('📥 Exported!', 'success');
+        };
 
-        function clearData() {
-            if (!confirm('❌ Delete all tasks? This cannot be undone!')) return;
-            if (!confirm('Are you really sure?')) return;
+        window.clearData = () => {
+            if (!confirm('Delete all?')) return;
+            if (!confirm('Really?')) return;
             tasks = [];
             localStorage.clear();
             location.reload();
-        }
+        };
 
         function save() {
             if (!autoSave) return;
@@ -768,17 +749,10 @@
                     updateWeather();
                     updateIP();
                 }
-            }, 5 * 60000); // 5 minutes
+            }, 5 * 60000);
         }
 
         init();
-
-        // FOCUS MODE
-        document.getElementById('focusBtn').addEventListener('click', () => {
-            document.getElementById('weatherDiv').style.display = document.getElementById('weatherDiv').style.display === 'none' ? 'block' : 'none';
-            document.getElementById('tzGrid').parentElement.style.display = document.getElementById('tzGrid').parentElement.style.display === 'none' ? 'block' : 'none';
-            showToast('🎯 Focus mode toggled', 'success');
-        });
 
         // THEME BUTTON
         if (darkMode) {
@@ -789,39 +763,12 @@
 
         document.getElementById('themeBtn').addEventListener('click', toggleDark);
 
-        // INSTALL APP
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('installBtn').style.display = 'block';
+        // FOCUS MODE
+        document.getElementById('focusBtn').addEventListener('click', () => {
+            document.getElementById('weatherDiv').style.display = document.getElementById('weatherDiv').style.display === 'none' ? 'block' : 'none';
+            document.getElementById('tzGrid').parentElement.style.display = document.getElementById('tzGrid').parentElement.style.display === 'none' ? 'block' : 'none';
+            showToast('🎯 Focus mode', 'success');
         });
-
-        document.getElementById('installBtn').addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    showToast('✅ App installed!', 'success');
-                }
-                deferredPrompt = null;
-                document.getElementById('installBtn').style.display = 'none';
-            }
-        });
-
-        window.addEventListener('appinstalled', () => {
-            showToast('✅ App installed successfully!', 'success');
-            document.getElementById('installBtn').style.display = 'none';
-        });
-
-        // REMOVE SERVICE WORKER - ONLINE FIRST
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(registrations => {
-                for (let registration of registrations) {
-                    registration.unregister();
-                }
-            });
-        }
     </script>
 </body>
 </html>
