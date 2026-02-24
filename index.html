@@ -4,7 +4,7 @@
     <meta name="google-site-verification" content="CLq9qwFy6AC0NVkiadZfn3zegMi2KUDntcm02hTWE5w" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="ProClock Pro - Simple Clock & Task Manager">
+    <meta name="description" content="ProClock Pro - Clock & Task Manager">
     <meta name="theme-color" content="#00d9ff">
     <title>ProClock Pro</title>
     <style>
@@ -14,14 +14,9 @@
             background: linear-gradient(135deg, #0f172a 0%, #1a1f35 100%);
             color: white;
             font-family: system-ui, sans-serif;
-            padding: 0;
-            margin: 0;
         }
         
-        body.light-theme {
-            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
-            color: #333;
-        }
+        body.light { background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%); color: #333; }
         
         .header {
             background: rgba(0, 0, 0, 0.3);
@@ -50,24 +45,11 @@
             transition: all 0.3s;
         }
         
-        .btn:hover {
-            background: rgba(0, 217, 255, 0.2);
-            border-color: #00d9ff;
-        }
+        .btn:hover { background: rgba(0, 217, 255, 0.2); border-color: #00d9ff; }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
         
-        .tabs {
-            display: flex;
-            gap: 2rem;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 1rem;
-        }
+        .tabs { display: flex; gap: 2rem; margin-bottom: 2rem; border-bottom: 2px solid rgba(255, 255, 255, 0.1); padding-bottom: 1rem; }
         
         .tab-btn {
             background: none;
@@ -81,536 +63,143 @@
             transition: all 0.3s;
         }
         
-        .tab-btn:hover {
-            color: white;
-        }
-        
-        .tab-btn.active {
-            color: #00d9ff;
-        }
-        
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: -1rem;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: #00d9ff;
-        }
-        
-        .tab {
-            display: none;
-        }
-        
-        .tab.active {
-            display: block;
-        }
-        
-        .clock {
-            text-align: center;
-            margin: 3rem 0;
-        }
-        
-        .time {
-            font-size: 5rem;
-            font-weight: 100;
-            letter-spacing: -2px;
-            color: #00d9ff;
-            font-variant-numeric: tabular-nums;
-            margin-bottom: 1rem;
-        }
-        
-        .date {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        
-        .progress {
-            margin: 2rem 0;
-        }
-        
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-        
-        .progress-bar {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00d9ff, #0099cc);
-            transition: width 1s linear;
-        }
-        
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .weather {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-        
-        .weather-icon {
-            font-size: 3rem;
-        }
-        
-        .weather-temp {
-            font-size: 2rem;
-            color: #00d9ff;
-            margin-bottom: 0.5rem;
-        }
-        
-        .weather-desc {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
-        }
-        
-        .timezone-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        .timezone {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .timezone:hover {
-            border-color: #00d9ff;
-            background: rgba(0, 217, 255, 0.1);
-            transform: translateY(-4px);
-        }
-        
-        .timezone.selected {
-            border-color: #00d9ff;
-            background: rgba(0, 217, 255, 0.2);
-        }
-        
-        .tz-name {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            margin-bottom: 0.75rem;
-        }
-        
-        .tz-time {
-            font-size: 1.8rem;
-            color: #00d9ff;
-            font-variant-numeric: tabular-nums;
-            margin-bottom: 0.5rem;
-        }
-        
-        .tz-code {
-            color: #00d9ff;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-        
-        .task-form {
-            display: flex;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-        
-        .input {
-            flex: 1;
-            min-width: 200px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.5rem;
-            padding: 0.75rem;
-            color: white;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-        
-        .input:focus {
-            outline: none;
-            border-color: #00d9ff;
-            background: rgba(0, 217, 255, 0.05);
-        }
-        
-        .select {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.5rem;
-            padding: 0.75rem;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .select:focus {
-            outline: none;
-            border-color: #00d9ff;
-        }
-        
-        .select option {
-            background: #0f172a;
-            color: white;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #00d9ff, #0099cc);
-            color: #000;
-            border: none;
-            border-radius: 0.5rem;
-            padding: 0.75rem 2rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 217, 255, 0.3);
-        }
-        
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-        
-        .tasks {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        
-        .task {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: all 0.3s;
-        }
-        
-        .task:hover {
-            border-color: #00d9ff;
-            background: rgba(0, 217, 255, 0.05);
-        }
-        
-        .task.done {
-            opacity: 0.6;
-        }
-        
-        .task.done .task-text {
-            text-decoration: line-through;
-            color: rgba(255, 255, 255, 0.5);
-        }
-        
-        .task-check {
-            width: 1.5rem;
-            height: 1.5rem;
-            cursor: pointer;
-            accent-color: #00d9ff;
-        }
-        
-        .task-info {
-            flex: 1;
-        }
-        
-        .task-text {
-            font-weight: 500;
-            word-break: break-word;
-        }
-        
-        .task-date {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.5);
-            margin-top: 0.25rem;
-        }
-        
-        .task-priority {
-            padding: 0.3rem 0.7rem;
-            border-radius: 0.3rem;
-            font-size: 0.7rem;
-            font-weight: 700;
-        }
-        
-        .pri-high {
-            background: rgba(239, 68, 68, 0.3);
-            color: #ff8080;
-        }
-        
-        .pri-medium {
-            background: rgba(251, 146, 60, 0.3);
-            color: #ffb366;
-        }
-        
-        .pri-low {
-            background: rgba(34, 197, 94, 0.3);
-            color: #80ff99;
-        }
-        
-        .btn-delete {
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: all 0.3s;
-            padding: 0.5rem;
-        }
-        
-        .btn-delete:hover {
-            color: #ff6b6b;
-        }
-        
-        .empty {
-            text-align: center;
-            padding: 2rem;
-            color: rgba(255, 255, 255, 0.5);
-        }
-        
-        .settings-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-        
-        .setting {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-            padding: 1.5rem;
-        }
-        
-        .setting h3 {
-            color: #00d9ff;
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
-        
-        .setting-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .setting-item:last-child {
-            border-bottom: none;
-        }
-        
-        .toggle {
-            width: 50px;
-            height: 26px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 13px;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.3s;
-        }
-        
-        .toggle::before {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            left: 3px;
-            top: 50%;
-            transform: translateY(-50%);
-            transition: all 0.3s;
-        }
-        
-        .toggle.on {
-            background: rgba(0, 217, 255, 0.3);
-            border-color: #00d9ff;
-        }
-        
-        .toggle.on::before {
-            left: 27px;
-            background: #00d9ff;
-        }
-        
-        .btn-sec {
-            width: 100%;
-            padding: 0.75rem;
-            background: linear-gradient(135deg, #00d9ff, #0099cc);
-            color: #000;
-            border: none;
-            border-radius: 0.5rem;
-            font-weight: 700;
-            cursor: pointer;
-            margin-bottom: 0.5rem;
-            transition: all 0.3s;
-        }
-        
-        .btn-sec:hover {
-            transform: translateY(-2px);
-        }
-        
-        .btn-sec.danger {
-            background: linear-gradient(135deg, #ff6b6b, #ff4444);
-            color: white;
-        }
-        
-        .stats {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.95rem;
-            line-height: 1.8;
-        }
-        
-        .stats strong {
-            color: #00d9ff;
-        }
-        
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(239, 68, 68, 0.95);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            z-index: 1000;
-            display: none;
-            animation: slideUp 0.3s ease;
-        }
-        
-        .toast.show {
-            display: block;
-        }
-        
-        .toast.success {
-            background: rgba(16, 185, 129, 0.95);
-        }
-        
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-        
-        .ad-section {
-            background: rgba(0, 217, 255, 0.05);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 2rem 1rem;
-            margin-top: 3rem;
-            text-align: center;
-        }
-        
-        .ad-content {
-            display: flex;
-            justify-content: center;
-            margin: 1.5rem 0;
-        }
-        
-        .ad-content iframe {
-            max-width: 100% !important;
-            width: 100% !important;
-        }
-        
-        .footer {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.8rem;
-            text-align: center;
-            padding: 1rem 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 1rem;
-        }
-        
-        .footer a {
-            color: #00d9ff;
-            text-decoration: none;
-        }
+        .tab-btn:hover { color: white; }
+        .tab-btn.active { color: #00d9ff; }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -1rem; left: 0; right: 0; height: 3px; background: #00d9ff; }
+        
+        .tab { display: none; }
+        .tab.active { display: block; }
+        
+        .clock { text-align: center; margin: 3rem 0; }
+        .time { font-size: 5rem; font-weight: 100; letter-spacing: -2px; color: #00d9ff; font-variant-numeric: tabular-nums; margin-bottom: 1rem; }
+        .date { color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .progress { margin: 2rem 0; }
+        .progress-label { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .progress-bar { height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #00d9ff, #0099cc); transition: width 1s linear; }
+        
+        .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.5rem; }
+        
+        .weather { display: flex; gap: 2rem; align-items: center; }
+        .weather-icon { font-size: 3rem; }
+        .weather-temp { font-size: 2rem; color: #00d9ff; margin-bottom: 0.5rem; }
+        .weather-desc { color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; }
+        
+        .timezone-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        
+        .timezone { background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .timezone:hover { border-color: #00d9ff; background: rgba(0, 217, 255, 0.1); transform: translateY(-4px); }
+        .timezone.selected { border-color: #00d9ff; background: rgba(0, 217, 255, 0.2); }
+        
+        .tz-name { color: rgba(255, 255, 255, 0.5); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.75rem; }
+        .tz-time { font-size: 1.8rem; color: #00d9ff; font-variant-numeric: tabular-nums; margin-bottom: 0.5rem; }
+        .tz-code { color: #00d9ff; font-size: 0.75rem; font-weight: 700; }
+        
+        .task-form { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        
+        .input { flex: 1; min-width: 200px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 0.5rem; padding: 0.75rem; color: white; font-size: 1rem; transition: all 0.3s; }
+        .input:focus { outline: none; border-color: #00d9ff; background: rgba(0, 217, 255, 0.05); }
+        
+        .select { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 0.5rem; padding: 0.75rem; color: white; cursor: pointer; transition: all 0.3s; }
+        .select:focus { outline: none; border-color: #00d9ff; }
+        .select option { background: #0f172a; color: white; }
+        
+        .btn-primary { background: linear-gradient(135deg, #00d9ff, #0099cc); color: #000; border: none; border-radius: 0.5rem; padding: 0.75rem 2rem; font-weight: 700; cursor: pointer; transition: all 0.3s; white-space: nowrap; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 217, 255, 0.3); }
+        
+        .tasks { display: flex; flex-direction: column; gap: 1rem; }
+        .task { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 0.5rem; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.3s; }
+        .task:hover { border-color: #00d9ff; background: rgba(0, 217, 255, 0.05); }
+        .task.done { opacity: 0.6; }
+        .task.done .task-text { text-decoration: line-through; color: rgba(255, 255, 255, 0.5); }
+        
+        .task-check { width: 1.5rem; height: 1.5rem; cursor: pointer; accent-color: #00d9ff; }
+        .task-info { flex: 1; }
+        .task-text { font-weight: 500; word-break: break-word; }
+        .task-date { font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); margin-top: 0.25rem; }
+        
+        .task-priority { padding: 0.3rem 0.7rem; border-radius: 0.3rem; font-size: 0.7rem; font-weight: 700; }
+        .pri-high { background: rgba(239, 68, 68, 0.3); color: #ff8080; }
+        .pri-medium { background: rgba(251, 146, 60, 0.3); color: #ffb366; }
+        .pri-low { background: rgba(34, 197, 94, 0.3); color: #80ff99; }
+        
+        .btn-delete { background: none; border: none; color: rgba(255, 255, 255, 0.5); cursor: pointer; font-size: 1.2rem; transition: all 0.3s; padding: 0.5rem; }
+        .btn-delete:hover { color: #ff6b6b; }
+        
+        .empty { text-align: center; padding: 2rem; color: rgba(255, 255, 255, 0.5); }
+        
+        .settings-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+        .setting { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; padding: 1.5rem; }
+        .setting h3 { color: #00d9ff; margin-bottom: 1rem; font-size: 1.1rem; }
+        
+        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .setting-item:last-child { border-bottom: none; }
+        
+        .toggle { width: 50px; height: 26px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 13px; cursor: pointer; position: relative; transition: all 0.3s; }
+        .toggle::before { content: ''; position: absolute; width: 20px; height: 20px; background: white; border-radius: 50%; left: 3px; top: 50%; transform: translateY(-50%); transition: all 0.3s; }
+        .toggle.on { background: rgba(0, 217, 255, 0.3); border-color: #00d9ff; }
+        .toggle.on::before { left: 27px; background: #00d9ff; }
+        
+        .btn-sec { width: 100%; padding: 0.75rem; background: linear-gradient(135deg, #00d9ff, #0099cc); color: #000; border: none; border-radius: 0.5rem; font-weight: 700; cursor: pointer; margin-bottom: 0.5rem; transition: all 0.3s; }
+        .btn-sec:hover { transform: translateY(-2px); }
+        .btn-sec.danger { background: linear-gradient(135deg, #ff6b6b, #ff4444); color: white; }
+        
+        .stats { color: rgba(255, 255, 255, 0.7); font-size: 0.95rem; line-height: 1.8; }
+        .stats strong { color: #00d9ff; }
+        
+        .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: rgba(239, 68, 68, 0.95); color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; z-index: 1000; display: none; animation: slideUp 0.3s ease; }
+        .toast.show { display: block; }
+        .toast.success { background: rgba(16, 185, 129, 0.95); }
+        
+        @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        
+        .ad-section { background: rgba(0, 217, 255, 0.05); border-top: 1px solid rgba(255, 255, 255, 0.1); padding: 2rem 1rem; margin-top: 3rem; text-align: center; }
+        .ad-content { display: flex; justify-content: center; margin: 1.5rem 0; }
+        .ad-content iframe { max-width: 100% !important; width: 100% !important; }
+        
+        .footer { color: rgba(255, 255, 255, 0.5); font-size: 0.8rem; text-align: center; padding: 1rem 0; border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: 1rem; }
+        .footer a { color: #00d9ff; text-decoration: none; }
     </style>
 </head>
 <body>
-    <!-- HEADER -->
     <div class="header">
-        <div class="header-left">
-            <span id="ip">...</span>
-        </div>
+        <div class="header-left"><span id="ip">...</span></div>
         <div class="header-right">
+            <button class="btn" id="installBtn" style="display:none;" title="Install">📥</button>
             <button class="btn" id="themeBtn">🌙</button>
             <button class="btn" id="focusBtn">🧠</button>
         </div>
     </div>
 
-    <!-- MAIN -->
     <div class="container">
-        <!-- TABS -->
         <div class="tabs">
-            <button class="tab-btn active" onclick="openTab('clock')">⏰ Clock</button>
-            <button class="tab-btn" onclick="openTab('tasks')">✓ Tasks</button>
-            <button class="tab-btn" onclick="openTab('settings')">⚙️ Settings</button>
+            <button class="tab-btn active" data-tab="clock">⏰ Clock</button>
+            <button class="tab-btn" data-tab="tasks">✓ Tasks</button>
+            <button class="tab-btn" data-tab="settings">⚙️ Settings</button>
         </div>
 
-        <!-- CLOCK TAB -->
         <div id="clock" class="tab active">
             <div class="clock">
-                <div class="time"><span id="h">00</span>:<span id="m">00</span><span id="s">:00</span></div>
+                <div class="time"><span id="h">00</span>:<span id="m">00</span>:<span id="s">00</span></div>
                 <div class="date" id="date">Loading...</div>
             </div>
-
             <div class="progress">
-                <div class="progress-label">
-                    <span>📊 Day Progress</span>
-                    <span id="prog">0%</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progBar"></div>
-                </div>
+                <div class="progress-label"><span>📊 Progress</span><span id="prog">0%</span></div>
+                <div class="progress-bar"><div class="progress-fill" id="progBar"></div></div>
             </div>
-
             <div id="weatherDiv" class="card">
                 <div class="weather">
                     <div class="weather-icon" id="wIcon">☁️</div>
-                    <div>
-                        <div class="weather-temp" id="wTemp">--°C</div>
-                        <div class="weather-desc" id="wDesc">Loading...</div>
-                    </div>
+                    <div><div class="weather-temp" id="wTemp">--°C</div><div class="weather-desc" id="wDesc">Loading...</div></div>
                 </div>
             </div>
-
-            <h3 style="color: #00d9ff; margin: 2rem 0 1rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px;">🌍 Click to change timezone:</h3>
+            <h3 style="color: #00d9ff; margin: 2rem 0 1rem; font-size: 0.9rem; text-transform: uppercase;">🌍 Click timezone:</h3>
             <div class="timezone-grid" id="tzGrid"></div>
         </div>
 
-        <!-- TASKS TAB -->
         <div id="tasks" class="tab">
             <h3 style="color: #00d9ff; margin-bottom: 1rem; font-size: 0.9rem; text-transform: uppercase;">✓ Tasks <span id="taskCount">(0)</span></h3>
-
             <div class="task-form">
                 <input type="text" id="taskInput" class="input" placeholder="Add task..." autocomplete="off">
                 <select id="taskPri" class="select">
@@ -620,100 +209,57 @@
                 </select>
                 <button class="btn-primary" onclick="addTask()">+ Add</button>
             </div>
-
-            <div class="tasks" id="taskList">
-                <div class="empty">📝 No tasks</div>
-            </div>
+            <div class="tasks" id="taskList"><div class="empty">📝 No tasks</div></div>
         </div>
 
-        <!-- SETTINGS TAB -->
         <div id="settings" class="tab">
             <div class="settings-grid">
                 <div class="setting">
                     <h3>🎨 Appearance</h3>
-                    <div class="setting-item">
-                        <span>Dark Mode</span>
-                        <div class="toggle" id="darkToggle" onclick="toggleDark()"></div>
-                    </div>
+                    <div class="setting-item"><span>Dark Mode</span><div class="toggle" id="darkToggle" onclick="toggleDark()"></div></div>
                 </div>
-
                 <div class="setting">
                     <h3>⏲️ Clock</h3>
-                    <div class="setting-item">
-                        <span>Show Seconds</span>
-                        <div class="toggle on" id="secToggle" onclick="toggleSec()"></div>
-                    </div>
-                    <div class="setting-item">
-                        <span>12-Hour Format</span>
-                        <div class="toggle" id="h12Toggle" onclick="toggle12h()"></div>
-                    </div>
+                    <div class="setting-item"><span>Show Seconds</span><div class="toggle on" id="secToggle" onclick="toggleSec()"></div></div>
+                    <div class="setting-item"><span>12-Hour</span><div class="toggle" id="h12Toggle" onclick="toggle12h()"></div></div>
                 </div>
-
                 <div class="setting">
                     <h3>🔔 Notifications</h3>
-                    <div class="setting-item">
-                        <span>Task Reminders</span>
-                        <div class="toggle" id="notifToggle" onclick="toggleNotif()"></div>
-                    </div>
-                    <div class="setting-item">
-                        <span>Auto Save</span>
-                        <div class="toggle on" id="saveToggle" onclick="toggleSave()"></div>
-                    </div>
+                    <div class="setting-item"><span>Reminders</span><div class="toggle" id="notifToggle" onclick="toggleNotif()"></div></div>
+                    <div class="setting-item"><span>Auto Save</span><div class="toggle on" id="saveToggle" onclick="toggleSave()"></div></div>
                 </div>
-
                 <div class="setting">
                     <h3>📊 Statistics</h3>
-                    <div class="stats">
-                        <p>Total: <strong id="statTotal">0</strong></p>
-                        <p>Done: <strong id="statDone">0</strong></p>
-                        <p>Rate: <strong id="statRate">0%</strong></p>
-                    </div>
+                    <div class="stats"><p>Total: <strong id="statTotal">0</strong></p><p>Done: <strong id="statDone">0</strong></p><p>Rate: <strong id="statRate">0%</strong></p></div>
                 </div>
-
                 <div class="setting">
                     <h3>💾 Data</h3>
                     <button class="btn-sec" onclick="exportData()">📥 Export</button>
                     <button class="btn-sec danger" onclick="clearData()">🗑️ Clear</button>
                 </div>
-
                 <div class="setting">
                     <h3>ℹ️ About</h3>
-                    <div class="stats">
-                        <p><strong>ProClock Pro v1.0.0</strong></p>
-                        <p style="margin-top: 0.5rem;">Free & Offline First</p>
-                        <p style="margin-top: 0.75rem;">📧 <a href="mailto:natsaerkki@gmail.com" style="color: #00d9ff;">Support</a></p>
-                    </div>
+                    <div class="stats"><p><strong>ProClock Pro v1.0.0</strong></p><p style="margin-top: 0.75rem;">📧 <a href="mailto:natsaerkki@gmail.com" style="color: #00d9ff;">Support</a></p></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- AD SECTION -->
     <div class="ad-section">
-        <h2 style="color: #00d9ff; font-size: 1.2rem; margin-bottom: 0.75rem;">🚀 Get Started Today</h2>
-        <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 1rem;">ProClock Pro is free, works offline, no ads in app.</p>
-        
+        <h2 style="color: #00d9ff; font-size: 1.2rem; margin-bottom: 0.75rem;">🚀 Get Started</h2>
+        <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 1rem;">Free, offline, no ads in app.</p>
         <div class="ad-content">
-            <!-- BEGIN AADS AD UNIT 2428368 -->
             <div id="frame" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
                 <iframe data-aa='2428368' src='//acceptable.a-ads.com/2428368/?size=Adaptive'
                     style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
             </div>
-            <!-- END AADS AD UNIT 2428368 -->
         </div>
-        
-        <div class="footer">
-            <p>© 2024 ProClock Pro</p>
-            <p><a href="mailto:natsaerkki@gmail.com">Contact</a></p>
-        </div>
+        <div class="footer"><p>© 2024 ProClock Pro</p><p><a href="mailto:natsaerkki@gmail.com">Contact</a></p></div>
     </div>
 
-    <!-- TOAST -->
     <div class="toast" id="toast"></div>
 
-    <!-- SCRIPT -->
     <script>
-        // STATE
         let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
         let darkMode = localStorage.getItem('dark') === '1';
         let selectedTZ = localStorage.getItem('tz') || 'Helsinki';
@@ -730,20 +276,6 @@
             { name: 'Dubai', off: 4 }
         ];
 
-        // INIT
-        function init() {
-            applyTheme();
-            updateTZ();
-            renderTasks();
-            updateTime();
-            updateWeather();
-            updateIP();
-            setInterval(updateTime, 1000);
-            setInterval(updateTZ, 60000);
-            setInterval(updateWeather, 30 * 60000);
-        }
-
-        // TOAST
         function showToast(msg, type = 'error') {
             const t = document.getElementById('toast');
             t.textContent = msg;
@@ -751,7 +283,6 @@
             setTimeout(() => t.classList.remove('show'), 3000);
         }
 
-        // CLOCK
         function updateTime() {
             const now = new Date();
             let h = now.getHours();
@@ -803,7 +334,6 @@
             showToast(`Switched to ${name}`, 'success');
         }
 
-        // WEATHER
         async function updateWeather() {
             try {
                 const res = await fetch('https://wttr.in/?format=j1');
@@ -824,7 +354,6 @@
             }
         }
 
-        // IP
         async function updateIP() {
             try {
                 const res = await fetch('https://ipapi.co/json/');
@@ -835,7 +364,6 @@
             }
         }
 
-        // TASKS
         function addTask() {
             const text = document.getElementById('taskInput').value.trim();
             const pri = document.getElementById('taskPri').value;
@@ -910,7 +438,6 @@
             document.getElementById('statRate').textContent = rate + '%';
         }
 
-        // SETTINGS
         function toggleDark() {
             darkMode = !darkMode;
             localStorage.setItem('dark', darkMode ? '1' : '0');
@@ -923,7 +450,6 @@
             showSec = !showSec;
             localStorage.setItem('sec', showSec ? '1' : '0');
             document.getElementById('secToggle').classList.toggle('on');
-            document.getElementById('s').style.display = showSec ? 'inline' : 'none';
         }
 
         function toggle12h() {
@@ -944,9 +470,9 @@
 
         function applyTheme() {
             if (darkMode) {
-                document.body.classList.add('light-theme');
+                document.body.classList.add('light');
             } else {
-                document.body.classList.remove('light-theme');
+                document.body.classList.remove('light');
             }
             document.getElementById('darkToggle').classList.toggle('on', darkMode);
         }
@@ -966,15 +492,7 @@
             if (!confirm('Clear all data?')) return;
             tasks = [];
             localStorage.clear();
-            init();
-            showToast('Cleared!', 'success');
-        }
-
-        function openTab(name) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(name).classList.add('active');
-            event.target.classList.add('active');
+            location.reload();
         }
 
         function save() {
@@ -982,7 +500,30 @@
             localStorage.setItem('tasks', JSON.stringify(tasks));
         }
 
-        // START
+        // TAB NAVIGATION
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const tab = e.target.dataset.tab;
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById(tab).classList.add('active');
+                e.target.classList.add('active');
+            });
+        });
+
+        // INIT
+        function init() {
+            applyTheme();
+            updateTZ();
+            renderTasks();
+            updateTime();
+            updateWeather();
+            updateIP();
+            setInterval(updateTime, 1000);
+            setInterval(updateTZ, 60000);
+            setInterval(updateWeather, 30 * 60000);
+        }
+
         init();
 
         // FOCUS MODE
@@ -992,7 +533,7 @@
             showToast('Focus mode toggled', 'success');
         });
 
-        // SET THEME BUTTON
+        // THEME BUTTON
         if (darkMode) {
             document.getElementById('themeBtn').textContent = '☀️';
         } else {
@@ -1000,6 +541,31 @@
         }
 
         document.getElementById('themeBtn').addEventListener('click', toggleDark);
+
+        // INSTALL APP
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').style.display = 'block';
+        });
+
+        document.getElementById('installBtn').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    showToast('App installed!', 'success');
+                }
+                deferredPrompt = null;
+                document.getElementById('installBtn').style.display = 'none';
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            showToast('App installed!', 'success');
+            document.getElementById('installBtn').style.display = 'none';
+        });
     </script>
 </body>
 </html>
